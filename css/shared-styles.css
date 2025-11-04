@@ -1,0 +1,124 @@
+/* Shared styles across all pages - InsulaAI Theme */
+
+:root {
+    --neon-cyan: #00f0ff;
+    --neon-violet: #bf00ff;
+    --neon-amber: #ffaa00;
+    --neon-pink: #ff006e;
+    --deep-black: #0a0a0f;
+    --dark-gray: #1a1a24;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Inter', sans-serif;
+    background: var(--deep-black);
+    color: #fff;
+    overflow-x: hidden;
+}
+
+/* Auth Button Styles - matches landing page theme */
+.auth-btn {
+    padding: 10px 25px;
+    margin: 0 8px;
+    font-size: 0.95rem;
+    font-weight: 600;
+    border: 2px solid var(--neon-cyan);
+    background: transparent;
+    color: #fff;
+    border-radius: 50px;
+    position: relative;
+    overflow: hidden;
+    transition: 0.4s;
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-block;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.auth-btn::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    border-radius: 50%;
+    background: var(--neon-cyan);
+    transform: translate(-50%, -50%);
+    transition: 0.6s;
+    z-index: -1;
+}
+
+.auth-btn:hover::before {
+    width: 400%;
+    height: 400%;
+}
+
+.auth-btn:hover {
+    color: var(--deep-black);
+    box-shadow: 0 0 30px var(--neon-cyan);
+    transform: translateY(-2px);
+    text-decoration: none;
+}
+
+.auth-btn-secondary {
+    border-color: var(--neon-violet);
+}
+
+.auth-btn-secondary::before {
+    background: var(--neon-violet);
+}
+
+.auth-btn-secondary:hover {
+    box-shadow: 0 0 30px var(--neon-violet);
+}
+
+/* Scroll Side Effects */
+.scroll-effect-left,
+.scroll-effect-right {
+    position: fixed;
+    width: 4px;
+    height: 0;
+    background: linear-gradient(180deg, transparent, var(--neon-cyan), var(--neon-violet), transparent);
+    box-shadow: 0 0 20px var(--neon-cyan);
+    transition: height 0.3s ease;
+    z-index: 9998;
+    opacity: 0;
+}
+
+.scroll-effect-left {
+    left: 20px;
+    top: 100px;
+}
+
+.scroll-effect-right {
+    right: 20px;
+    top: 100px;
+}
+
+.scroll-effect-left.active,
+.scroll-effect-right.active {
+    opacity: 1;
+}
+
+/* Floating scroll particles */
+.scroll-particle-left,
+.scroll-particle-right {
+    position: fixed;
+    width: 8px;
+    height: 8px;
+    background: var(--neon-cyan);
+    border-radius: 50%;
+    box-shadow: 0 0 15px var(--neon-cyan);
+    z-index: 9997;
+    pointer-events: none;
+    opacity: 0;
+    transition: all 0.5s ease;
+}

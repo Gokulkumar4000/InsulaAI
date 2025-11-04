@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - InsulaAI</title>
+    
+    <!-- Bootstrap 5 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <!-- Shared Styles -->
+    <link href="css/shared-styles.css" rel="stylesheet">
+    
+    <style>
+        .auth-container {
+            min-height: 100vh;
+            display: flex;
+            background: var(--deep-black);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        /* Animated Background */
+        .bg-animated {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            background: linear-gradient(135deg, #0a0a0f 0%, #1a0a2e 30%, #0f0a1a 60%, #0a0a0f 100%);
+            background-size: 400% 400%;
+            animation: gradientShift 20s ease infinite;
+        }
+        
+        @keyframes gradientShift {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+        
+        .circuit-grid {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0.08;
+            background-image: 
+                linear-gradient(var(--neon-cyan) 1px, transparent 1px),
+                linear-gradient(90deg, var(--neon-cyan) 1px, transparent 1px);
+            background-size: 60px 60px;
+            animation: gridMove 30s linear infinite;
+        }
+        
+        @keyframes gridMove {
+            0% { transform: translate(0, 0); }
+            100% { transform: translate(60px, 60px); }
+        }
+        
+        /* Two-pane layout */
+        .auth-left {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 50px;
+            position: relative;
+            z-index: 2;
+        }
+        
+        .auth-right {
+            flex: 1;
+            background: linear-gradient(135deg, rgba(0, 240, 255, 0.1), rgba(191, 0, 255, 0.1));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-left: 2px solid rgba(0, 240, 255, 0.3);
+            position: relative;
+            z-index: 2;
+        }
+        
+        .auth-card {
+            background: rgba(26, 26, 36, 0.8);
+            backdrop-filter: blur(20px);
+            border: 2px solid rgba(0, 240, 255, 0.3);
+            border-radius: 25px;
+            padding: 50px;
+            width: 100%;
+            max-width: 450px;
+            box-shadow: 0 0 50px rgba(0, 240, 255, 0.2);
+        }
+        
+        .auth-title {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 2.5rem;
+            font-weight: 900;
+            background: linear-gradient(90deg, var(--neon-cyan), var(--neon-violet));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 10px;
+            filter: drop-shadow(0 0 20px rgba(0, 240, 255, 0.5));
+        }
+        
+        .auth-subtitle {
+            color: #aaa;
+            margin-bottom: 30px;
+            font-size: 1.1rem;
+        }
+        
+        .form-control {
+            background: rgba(10, 10, 15, 0.6);
+            border: 2px solid rgba(0, 240, 255, 0.2);
+            color: #fff;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            font-size: 1rem;
+        }
+        
+        .form-control:focus {
+            background: rgba(10, 10, 15, 0.8);
+            border-color: var(--neon-cyan);
+            color: #fff;
+            box-shadow: 0 0 20px rgba(0, 240, 255, 0.3);
+        }
+        
+        .form-label {
+            color: var(--neon-cyan);
+            font-weight: 600;
+            margin-bottom: 8px;
+            font-size: 0.95rem;
+        }
+        
+        .btn-submit {
+            width: 100%;
+            padding: 15px;
+            font-size: 1.1rem;
+            font-weight: 700;
+            border: 2px solid var(--neon-cyan);
+            background: transparent;
+            color: #fff;
+            border-radius: 50px;
+            position: relative;
+            overflow: hidden;
+            transition: 0.4s;
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            margin-top: 10px;
+        }
+        
+        .btn-submit::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: var(--neon-cyan);
+            transform: translate(-50%, -50%);
+            transition: 0.6s;
+            z-index: -1;
+        }
+        
+        .btn-submit:hover::before {
+            width: 400%;
+            height: 400%;
+        }
+        
+        .btn-submit:hover {
+            color: var(--deep-black);
+            box-shadow: 0 0 40px var(--neon-cyan);
+        }
+        
+        .divider {
+            text-align: center;
+            margin: 30px 0;
+            position: relative;
+        }
+        
+        .divider::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--neon-cyan), transparent);
+        }
+        
+        .divider span {
+            background: rgba(26, 26, 36, 0.9);
+            padding: 0 15px;
+            position: relative;
+            color: #aaa;
+        }
+        
+        .link-text {
+            color: var(--neon-cyan);
+            text-decoration: none;
+            font-weight: 600;
+        }
+        
+        .link-text:hover {
+            color: var(--neon-violet);
+            text-decoration: underline;
+        }
+        
+        .visual-content {
+            text-align: center;
+            color: #fff;
+        }
+        
+        .visual-icon {
+            font-size: 150px;
+            background: linear-gradient(135deg, var(--neon-cyan), var(--neon-violet));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            filter: drop-shadow(0 0 40px rgba(0, 240, 255, 0.6));
+            margin-bottom: 30px;
+        }
+        
+        .visual-title {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 2rem;
+            margin-bottom: 15px;
+            color: var(--neon-cyan);
+        }
+        
+        .visual-text {
+            font-size: 1.1rem;
+            color: #bbb;
+            line-height: 1.7;
+        }
+        
+        @media (max-width: 768px) {
+            .auth-container {
+                flex-direction: column;
+            }
+            .auth-right {
+                border-left: none;
+                border-top: 2px solid rgba(0, 240, 255, 0.3);
+                padding: 30px;
+            }
+            .visual-icon {
+                font-size: 80px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="bg-animated">
+        <div class="circuit-grid"></div>
+    </div>
+    
+    <div class="auth-container">
+        <!-- Left: Form -->
+        <div class="auth-left">
+            <div class="auth-card">
+                <h1 class="auth-title">Welcome Back</h1>
+                <p class="auth-subtitle">Login to access your InsulaAI dashboard</p>
+                
+                <form id="loginForm">
+                    <div class="mb-3">
+                        <label class="form-label">Email Address</label>
+                        <input type="email" class="form-control" id="email" placeholder="your.email@example.com" required>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">Password</label>
+                        <input type="password" class="form-control" id="password" placeholder="Enter your password" required>
+                    </div>
+                    
+                    <div class="mb-3 form-check">
+                        <input type="checkbox" class="form-check-input" id="remember">
+                        <label class="form-check-label" for="remember" style="color: #aaa;">Remember me</label>
+                    </div>
+                    
+                    <button type="submit" class="btn-submit">Login</button>
+                </form>
+                
+                <div class="divider">
+                    <span>OR</span>
+                </div>
+                
+                <p class="text-center" style="color: #aaa;">
+                    Don't have an account? <a href="signup.html" class="link-text">Sign up here</a>
+                </p>
+                
+                <p class="text-center mt-3">
+                    <a href="index.html" class="link-text">← Back to Home</a>
+                </p>
+            </div>
+        </div>
+        
+        <!-- Right: Visual -->
+        <div class="auth-right">
+            <div class="visual-content">
+                <div class="visual-icon">
+                    <i class="bi bi-shield-lock-fill"></i>
+                </div>
+                <h2 class="visual-title">Secure Access</h2>
+                <p class="visual-text">
+                    Your data is protected with enterprise-grade security.<br>
+                    Access your inspection history and analysis tools.
+                </p>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Simple form handling (will connect to backend later)
+        document.getElementById('loginForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            
+            // TODO: Connect to backend authentication
+            console.log('Login attempt:', email);
+            
+            // For now, redirect to a placeholder dashboard
+            alert('Login functionality will be connected to backend. For now, redirecting to homepage.');
+            window.location.href = 'index.html';
+        });
+    </script>
+</body>
+</html>

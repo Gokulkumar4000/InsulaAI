@@ -179,43 +179,74 @@
             to { opacity: 1; transform: translateY(0); }
         }
         
+        .input-group-custom {
+            position: relative;
+            margin-bottom: 25px;
+        }
+        
+        .input-icon {
+            position: absolute;
+            left: 18px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--neon-cyan);
+            font-size: 1.2rem;
+            z-index: 2;
+            pointer-events: none;
+        }
+        
         .form-control, .form-select {
-            background: rgba(10, 10, 15, 0.8);
-            border: 2px solid rgba(0, 240, 255, 0.3);
+            background: linear-gradient(135deg, rgba(10, 10, 15, 0.9), rgba(26, 26, 36, 0.7));
+            border: 2px solid rgba(0, 240, 255, 0.25);
             color: #fff;
-            padding: 15px 20px;
-            border-radius: 12px;
-            margin-bottom: 20px;
+            padding: 16px 20px 16px 52px;
+            border-radius: 14px;
             font-size: 1rem;
-            transition: all 0.3s ease;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
             font-family: 'Inter', sans-serif;
+            width: 100%;
+            position: relative;
         }
         
         .form-select {
             background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%2300f0ff' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M2 5l6 6 6-6'/%3e%3c/svg%3e");
             background-repeat: no-repeat;
-            background-position: right 15px center;
-            background-size: 16px 12px;
-            padding-right: 45px;
+            background-position: right 18px center;
+            background-size: 18px 14px;
+            padding-right: 50px;
             cursor: pointer;
         }
         
         .form-select option {
             background: #1a1a24;
             color: #fff;
-            padding: 10px;
+            padding: 12px;
+        }
+        
+        .form-control:hover, .form-select:hover {
+            border-color: rgba(0, 240, 255, 0.5);
+            box-shadow: 0 0 15px rgba(0, 240, 255, 0.2);
         }
         
         .form-control:focus, .form-select:focus {
-            background: rgba(10, 10, 15, 0.95);
+            background: linear-gradient(135deg, rgba(10, 10, 15, 0.95), rgba(26, 26, 36, 0.85));
             border-color: var(--neon-cyan);
             color: #fff;
-            box-shadow: 0 0 25px rgba(0, 240, 255, 0.4), inset 0 0 10px rgba(0, 240, 255, 0.1);
+            box-shadow: 0 0 30px rgba(0, 240, 255, 0.5), 
+                        inset 0 0 15px rgba(0, 240, 255, 0.15),
+                        0 0 0 3px rgba(0, 240, 255, 0.1);
             outline: none;
+            transform: translateY(-2px);
+        }
+        
+        .form-control:focus + .input-icon,
+        .form-select:focus ~ .input-icon {
+            color: #fff;
+            text-shadow: 0 0 15px var(--neon-cyan);
         }
         
         .form-control::placeholder {
-            color: rgba(255, 255, 255, 0.4);
+            color: rgba(255, 255, 255, 0.35);
         }
         
         .form-label {
@@ -372,78 +403,84 @@
                 <form id="onboardingForm">
                     <!-- Step 1: Basic Info -->
                     <div class="form-step active" data-step="1">
-                        <h3 style="color: var(--neon-cyan); margin-bottom: 20px;">Basic Information</h3>
-                        <div class="mb-3">
+                        <h3 style="color: var(--neon-cyan); margin-bottom: 25px;">Basic Information</h3>
+                        <div class="input-group-custom">
                             <label class="form-label">Full Name *</label>
-                            <input type="text" class="form-control" id="fullName" required>
+                            <i class="bi bi-person-fill input-icon"></i>
+                            <input type="text" class="form-control" id="fullName" placeholder="Enter your full name" required>
                         </div>
-                        <div class="mb-3">
+                        <div class="input-group-custom">
                             <label class="form-label">Organization (Optional)</label>
-                            <input type="text" class="form-control" id="organization">
+                            <i class="bi bi-building input-icon"></i>
+                            <input type="text" class="form-control" id="organization" placeholder="Company or institution">
                         </div>
                     </div>
                     
                     <!-- Step 2: Source -->
                     <div class="form-step" data-step="2">
-                        <h3 style="color: var(--neon-cyan); margin-bottom: 20px;">How did you hear about us?</h3>
-                        <div class="mb-3">
+                        <h3 style="color: var(--neon-cyan); margin-bottom: 25px;">How did you hear about us?</h3>
+                        <div class="input-group-custom">
                             <label class="form-label">Source *</label>
+                            <i class="bi bi-megaphone-fill input-icon"></i>
                             <select class="form-select" id="source" required>
                                 <option value="">Select one...</option>
-                                <option value="social">Social Media</option>
-                                <option value="friend">Friend/Colleague</option>
-                                <option value="college">College/University</option>
-                                <option value="search">Search Engine</option>
-                                <option value="conference">Conference/Event</option>
-                                <option value="other">Other</option>
+                                <option value="social">📱 Social Media</option>
+                                <option value="friend">👥 Friend/Colleague</option>
+                                <option value="college">🎓 College/University</option>
+                                <option value="search">🔍 Search Engine</option>
+                                <option value="conference">🎪 Conference/Event</option>
+                                <option value="other">📌 Other</option>
                             </select>
                         </div>
                     </div>
                     
                     <!-- Step 3: Role -->
                     <div class="form-step" data-step="3">
-                        <h3 style="color: var(--neon-cyan); margin-bottom: 20px;">Your Role</h3>
-                        <div class="mb-3">
+                        <h3 style="color: var(--neon-cyan); margin-bottom: 25px;">Your Role</h3>
+                        <div class="input-group-custom">
                             <label class="form-label">I am a *</label>
+                            <i class="bi bi-briefcase-fill input-icon"></i>
                             <select class="form-select" id="role" required>
                                 <option value="">Select one...</option>
-                                <option value="student">Student</option>
-                                <option value="engineer">Engineer</option>
-                                <option value="researcher">Researcher</option>
-                                <option value="inspector">Field Inspector</option>
-                                <option value="manager">Project Manager</option>
-                                <option value="other">Other</option>
+                                <option value="student">🎓 Student</option>
+                                <option value="engineer">⚙️ Engineer</option>
+                                <option value="researcher">🔬 Researcher</option>
+                                <option value="inspector">🔍 Field Inspector</option>
+                                <option value="manager">📊 Project Manager</option>
+                                <option value="other">✨ Other</option>
                             </select>
                         </div>
                     </div>
                     
                     <!-- Step 4: Purpose -->
                     <div class="form-step" data-step="4">
-                        <h3 style="color: var(--neon-cyan); margin-bottom: 20px;">Purpose of Use</h3>
-                        <div class="mb-3">
+                        <h3 style="color: var(--neon-cyan); margin-bottom: 25px;">Purpose of Use</h3>
+                        <div class="input-group-custom">
                             <label class="form-label">I plan to use InsulaAI for *</label>
+                            <i class="bi bi-bullseye input-icon"></i>
                             <select class="form-select" id="purpose" required>
                                 <option value="">Select one...</option>
-                                <option value="learning">Learning & Education</option>
-                                <option value="research">Academic Research</option>
-                                <option value="inspection">Field Inspection</option>
-                                <option value="demo">Demo/Testing</option>
-                                <option value="production">Production Use</option>
+                                <option value="learning">📚 Learning & Education</option>
+                                <option value="research">🔬 Academic Research</option>
+                                <option value="inspection">🔍 Field Inspection</option>
+                                <option value="demo">🧪 Demo/Testing</option>
+                                <option value="production">🚀 Production Use</option>
                             </select>
                         </div>
                     </div>
                     
                     <!-- Step 5: Preferences -->
                     <div class="form-step" data-step="5">
-                        <h3 style="color: var(--neon-cyan); margin-bottom: 20px;">Preferences</h3>
-                        <div class="mb-3">
+                        <h3 style="color: var(--neon-cyan); margin-bottom: 25px;">Preferences</h3>
+                        <div class="input-group-custom">
                             <label class="form-label">Preferred Language</label>
+                            <i class="bi bi-globe input-icon"></i>
                             <select class="form-select" id="language">
-                                <option value="en">English</option>
-                                <option value="es">Spanish</option>
-                                <option value="fr">French</option>
-                                <option value="de">German</option>
-                                <option value="zh">Chinese</option>
+                                <option value="en">🇺🇸 English</option>
+                                <option value="es">🇪🇸 Spanish</option>
+                                <option value="fr">🇫🇷 French</option>
+                                <option value="de">🇩🇪 German</option>
+                                <option value="zh">🇨🇳 Chinese</option>
                             </select>
                         </div>
                         <div class="mb-3 form-check">
@@ -491,6 +528,7 @@
     </div>
     
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="js/modal-vfx.js"></script>
     <script src="js/modal.js"></script>
     <script src="js/toast.js"></script>
     <script>

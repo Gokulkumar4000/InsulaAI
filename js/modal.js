@@ -115,6 +115,12 @@ class InsulaModal {
         
         setTimeout(() => {
             contentEl.classList.add('show');
+            
+            // Add electricity VFX effects
+            if (window.modalVFX) {
+                window.modalVFX.createElectricBolts(contentEl);
+                window.modalVFX.createElectricParticles(contentEl);
+            }
         }, 10);
 
         this.onCloseCallback = onClose;

@@ -13,6 +13,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
     <!-- Shared Styles -->
     <link href="css/shared-styles.css" rel="stylesheet">
+    <link href="css/modal.css" rel="stylesheet">
     
     <style>
         .auth-container {
@@ -324,6 +325,7 @@
     
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="js/modal.js"></script>
     <script src="js/auth.js"></script>
     <script>
         document.getElementById('signupForm').addEventListener('submit', function(e) {
@@ -333,7 +335,11 @@
             const confirmPassword = document.getElementById('confirmPassword').value;
             
             if (password !== confirmPassword) {
-                alert('Passwords do not match!');
+                window.insulaModal.show({
+                    title: 'Password Mismatch',
+                    message: 'Passwords do not match. Please make sure both passwords are identical.',
+                    type: 'error'
+                });
                 return;
             }
             
@@ -343,10 +349,20 @@
             const result = signupUser(fullname, email, password);
             
             if (result.success) {
-                alert('Account created successfully! Redirecting to onboarding...');
-                window.location.href = 'onboarding.html';
+                window.insulaModal.show({
+                    title: 'Account Created!',
+                    message: 'Your account has been created successfully. Redirecting to onboarding...',
+                    type: 'success',
+                    onClose: () => {
+                        window.location.href = 'onboarding.html';
+                    }
+                });
             } else {
-                alert('Signup failed: ' + result.message);
+                window.insulaModal.show({
+                    title: 'Signup Failed',
+                    message: result.message,
+                    type: 'error'
+                });
             }
         });
     </script>

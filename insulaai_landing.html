@@ -1,0 +1,1475 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>InsulaAI - UAV-Based Insulator Inspection</title>
+    
+    <!-- Bootstrap 5 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --neon-cyan: #00f0ff;
+            --neon-violet: #bf00ff;
+            --neon-amber: #ffaa00;
+            --neon-pink: #ff006e;
+            --deep-black: #0a0a0f;
+            --dark-gray: #1a1a24;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--deep-black);
+            color: #fff;
+            overflow-x: hidden;
+        }
+
+        /* Custom Cursor */
+        .cursor {
+            width: 24px;
+            height: 24px;
+            border: 2px solid var(--neon-cyan);
+            border-radius: 50%;
+            position: fixed;
+            pointer-events: none;
+            z-index: 10000;
+            transition: 0.15s ease;
+            box-shadow: 0 0 25px var(--neon-cyan), inset 0 0 15px var(--neon-cyan);
+            mix-blend-mode: screen;
+        }
+
+        .cursor-follower {
+            width: 8px;
+            height: 8px;
+            background: var(--neon-violet);
+            border-radius: 50%;
+            position: fixed;
+            pointer-events: none;
+            z-index: 9999;
+            box-shadow: 0 0 20px var(--neon-violet);
+            mix-blend-mode: screen;
+        }
+
+        /* Click Ripple Effect */
+        .click-ripple {
+            position: fixed;
+            border-radius: 50%;
+            border: 2px solid var(--neon-cyan);
+            pointer-events: none;
+            z-index: 9997;
+            animation: rippleEffect 1s ease-out;
+        }
+
+        @keyframes rippleEffect {
+            0% {
+                width: 20px;
+                height: 20px;
+                opacity: 1;
+                box-shadow: 0 0 30px var(--neon-cyan);
+            }
+            100% {
+                width: 200px;
+                height: 200px;
+                opacity: 0;
+                box-shadow: 0 0 60px var(--neon-cyan);
+            }
+        }
+
+        /* Particle System */
+        .particle {
+            position: fixed;
+            width: 3px;
+            height: 3px;
+            background: var(--neon-cyan);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 1;
+            box-shadow: 0 0 10px var(--neon-cyan);
+            opacity: 0.6;
+        }
+
+        /* Animated Background */
+        .bg-animated {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            background: linear-gradient(135deg, #0a0a0f 0%, #1a0a2e 30%, #0f0a1a 60%, #0a0a0f 100%);
+            background-size: 400% 400%;
+            animation: gradientShift 20s ease infinite;
+        }
+
+        @keyframes gradientShift {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+
+        .circuit-grid {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0.08;
+            background-image: 
+                linear-gradient(var(--neon-cyan) 1px, transparent 1px),
+                linear-gradient(90deg, var(--neon-cyan) 1px, transparent 1px);
+            background-size: 60px 60px;
+            animation: gridMove 30s linear infinite;
+        }
+
+        @keyframes gridMove {
+            0% { transform: translate(0, 0); }
+            100% { transform: translate(60px, 60px); }
+        }
+
+        /* Glassmorphic Navbar */
+        .navbar-glass {
+            background: rgba(10, 10, 15, 0.85);
+            backdrop-filter: blur(25px);
+            border-bottom: 1px solid rgba(0, 240, 255, 0.3);
+            box-shadow: 0 8px 32px rgba(0, 240, 255, 0.15);
+            padding: 20px 0;
+            transition: all 0.3s ease;
+        }
+
+        .navbar-glass.scrolled {
+            background: rgba(10, 10, 15, 0.98);
+            box-shadow: 0 8px 32px rgba(0, 240, 255, 0.25);
+        }
+
+        .navbar-brand {
+            font-family: 'Orbitron', sans-serif;
+            font-weight: 900;
+            font-size: 2rem;
+            background: linear-gradient(90deg, var(--neon-cyan), var(--neon-violet));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            filter: drop-shadow(0 0 20px rgba(0, 240, 255, 0.6));
+            transition: 0.3s;
+        }
+
+        .navbar-brand:hover {
+            transform: scale(1.08);
+            filter: drop-shadow(0 0 30px var(--neon-cyan));
+        }
+
+        .nav-link {
+            color: #fff !important;
+            position: relative;
+            margin: 0 18px;
+            font-weight: 500;
+            transition: 0.3s;
+            font-size: 1.05rem;
+        }
+
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 0;
+            height: 2px;
+            background: linear-gradient(90deg, var(--neon-cyan), var(--neon-violet));
+            transition: 0.4s;
+            box-shadow: 0 0 15px var(--neon-cyan);
+        }
+
+        .nav-link:hover::after {
+            width: 100%;
+        }
+
+        .nav-link:hover {
+            color: var(--neon-cyan) !important;
+            text-shadow: 0 0 15px var(--neon-cyan);
+        }
+
+        /* Hero Section */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            padding-top: 100px;
+            overflow: hidden;
+        }
+
+        .hero-content {
+            text-align: center;
+            z-index: 2;
+            position: relative;
+        }
+
+        .hero h1 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 5rem;
+            font-weight: 900;
+            background: linear-gradient(90deg, var(--neon-cyan), var(--neon-violet), var(--neon-amber));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 25px;
+            filter: drop-shadow(0 0 40px rgba(0, 240, 255, 0.5));
+            line-height: 1.2;
+        }
+
+        .hero p {
+            font-size: 1.6rem;
+            color: #ccc;
+            margin-bottom: 50px;
+            font-weight: 300;
+            letter-spacing: 0.5px;
+        }
+
+        .drone-container {
+            margin: 50px auto;
+            position: relative;
+            width: 350px;
+            height: 350px;
+        }
+
+        .drone-svg {
+            width: 100%;
+            height: 100%;
+            filter: drop-shadow(0 0 40px rgba(0, 240, 255, 0.6));
+        }
+
+        .drone-glow {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(0, 240, 255, 0.2), transparent 70%);
+            animation: pulseGlow 3s ease-in-out infinite;
+        }
+
+        @keyframes pulseGlow {
+            0%, 100% { transform: translate(-50%, -50%) scale(1); opacity: 0.5; }
+            50% { transform: translate(-50%, -50%) scale(1.2); opacity: 0.8; }
+        }
+
+        .cta-btn {
+            padding: 18px 45px;
+            margin: 12px;
+            font-size: 1.15rem;
+            font-weight: 600;
+            border: 2px solid var(--neon-cyan);
+            background: transparent;
+            color: #fff;
+            border-radius: 50px;
+            position: relative;
+            overflow: hidden;
+            transition: 0.4s;
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .cta-btn::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: var(--neon-cyan);
+            transform: translate(-50%, -50%);
+            transition: 0.6s;
+            z-index: -1;
+        }
+
+        .cta-btn:hover::before {
+            width: 400%;
+            height: 400%;
+        }
+
+        .cta-btn:hover {
+            color: var(--deep-black);
+            box-shadow: 0 0 40px var(--neon-cyan), 0 0 80px var(--neon-cyan);
+            transform: translateY(-5px);
+            border-color: var(--neon-cyan);
+        }
+
+        .cta-btn-secondary {
+            border-color: var(--neon-violet);
+        }
+
+        .cta-btn-secondary::before {
+            background: var(--neon-violet);
+        }
+
+        .cta-btn-secondary:hover {
+            box-shadow: 0 0 40px var(--neon-violet), 0 0 80px var(--neon-violet);
+            border-color: var(--neon-violet);
+        }
+
+        /* Scroll Indicator */
+        .scroll-indicator {
+            position: absolute;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+        }
+
+        .scroll-indicator span {
+            color: var(--neon-cyan);
+            font-size: 0.9rem;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+
+        .scroll-arrow {
+            width: 30px;
+            height: 50px;
+            border: 2px solid var(--neon-cyan);
+            border-radius: 20px;
+            position: relative;
+            box-shadow: 0 0 20px var(--neon-cyan);
+        }
+
+        .scroll-arrow::after {
+            content: '';
+            position: absolute;
+            top: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 6px;
+            height: 6px;
+            background: var(--neon-cyan);
+            border-radius: 50%;
+            animation: scrollDot 2s ease-in-out infinite;
+            box-shadow: 0 0 10px var(--neon-cyan);
+        }
+
+        @keyframes scrollDot {
+            0% { top: 10px; opacity: 1; }
+            100% { top: 35px; opacity: 0; }
+        }
+
+        /* Features Section */
+        .features {
+            padding: 120px 0;
+            position: relative;
+            z-index: 2;
+        }
+
+        .section-title {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 3.5rem;
+            text-align: center;
+            margin-bottom: 100px;
+            background: linear-gradient(90deg, var(--neon-cyan), var(--neon-violet));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            filter: drop-shadow(0 0 30px rgba(0, 240, 255, 0.5));
+            position: relative;
+        }
+
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: -20px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100px;
+            height: 3px;
+            background: linear-gradient(90deg, transparent, var(--neon-cyan), transparent);
+            box-shadow: 0 0 20px var(--neon-cyan);
+        }
+
+        .feature-card {
+            background: rgba(26, 26, 36, 0.5);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(0, 240, 255, 0.15);
+            border-radius: 25px;
+            padding: 45px;
+            text-align: center;
+            transition: 0.5s;
+            position: relative;
+            overflow: hidden;
+            height: 100%;
+        }
+
+        .feature-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(45deg, transparent, rgba(0, 240, 255, 0.05), transparent);
+            transform: rotate(45deg);
+            transition: 0.8s;
+        }
+
+        .feature-card:hover::before {
+            left: 100%;
+        }
+
+        .feature-card:hover {
+            border-color: var(--neon-cyan);
+            box-shadow: 0 0 50px rgba(0, 240, 255, 0.4), inset 0 0 30px rgba(0, 240, 255, 0.1);
+            transform: translateY(-15px) scale(1.03);
+        }
+
+        .feature-icon {
+            font-size: 4.5rem;
+            background: linear-gradient(135deg, var(--neon-cyan), var(--neon-violet));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 25px;
+            display: inline-block;
+            transition: 0.5s;
+            filter: drop-shadow(0 0 20px rgba(0, 240, 255, 0.5));
+        }
+
+        .feature-card:hover .feature-icon {
+            transform: rotateY(360deg) scale(1.1);
+            filter: drop-shadow(0 0 35px var(--neon-cyan));
+        }
+
+        .feature-card h3 {
+            font-family: 'Orbitron', sans-serif;
+            margin-bottom: 18px;
+            color: var(--neon-cyan);
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+
+        .feature-card p {
+            color: #bbb;
+            line-height: 1.7;
+            font-size: 1.05rem;
+        }
+
+        /* How It Works */
+        .how-it-works {
+            padding: 120px 0;
+            background: linear-gradient(180deg, var(--deep-black), var(--dark-gray), var(--deep-black));
+            position: relative;
+            z-index: 2;
+        }
+
+        .steps-wrapper {
+            position: relative;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .step-item {
+            position: relative;
+            margin-bottom: 100px;
+            opacity: 0;
+            transform: translateX(-80px);
+        }
+
+        .step-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .step-card {
+            background: rgba(26, 26, 36, 0.7);
+            border: 2px solid rgba(0, 240, 255, 0.2);
+            border-radius: 25px;
+            padding: 50px;
+            position: relative;
+            overflow: hidden;
+            transition: 0.5s;
+        }
+
+        .step-card.active {
+            border-color: var(--neon-cyan);
+            box-shadow: 0 0 60px rgba(0, 240, 255, 0.4);
+            background: rgba(26, 26, 36, 0.9);
+        }
+
+        .step-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(0, 240, 255, 0.15), transparent);
+            transition: 0.8s;
+        }
+
+        .step-card.active::before {
+            left: 100%;
+        }
+
+        .step-number {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 4rem;
+            font-weight: 900;
+            background: linear-gradient(135deg, var(--neon-cyan), var(--neon-violet));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 25px;
+            filter: drop-shadow(0 0 25px rgba(0, 240, 255, 0.6));
+        }
+
+        .step-card h3 {
+            font-family: 'Orbitron', sans-serif;
+            color: var(--neon-cyan);
+            font-size: 2rem;
+            margin-bottom: 20px;
+        }
+
+        .step-card p {
+            color: #ccc;
+            font-size: 1.15rem;
+            line-height: 1.8;
+        }
+
+        /* Energy Connection Line */
+        .energy-connector {
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            bottom: -100px;
+            width: 4px;
+            height: 100px;
+            background: linear-gradient(180deg, var(--neon-cyan), transparent);
+            opacity: 0;
+        }
+
+        .energy-connector.active {
+            opacity: 1;
+        }
+
+        .energy-connector::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 20px;
+            height: 20px;
+            background: var(--neon-cyan);
+            border-radius: 50%;
+            box-shadow: 0 0 30px var(--neon-cyan);
+            animation: energyFlow 2s ease-in-out infinite;
+        }
+
+        @keyframes energyFlow {
+            0% { bottom: 100%; opacity: 0; transform: translateX(-50%) scale(0.5); }
+            50% { opacity: 1; transform: translateX(-50%) scale(1); }
+            100% { bottom: 0; opacity: 0; transform: translateX(-50%) scale(1.5); }
+        }
+
+        /* Why It Matters */
+        .why-matters {
+            padding: 120px 0;
+            position: relative;
+            z-index: 2;
+        }
+
+        .benefit-card {
+            background: rgba(26, 26, 36, 0.5);
+            border-left: 5px solid var(--neon-cyan);
+            padding: 40px;
+            margin: 25px 0;
+            border-radius: 15px;
+            transition: 0.5s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .benefit-card::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 5px;
+            height: 0;
+            background: var(--neon-violet);
+            transition: 0.5s;
+            box-shadow: 0 0 20px var(--neon-violet);
+        }
+
+        .benefit-card:hover::after {
+            height: 100%;
+        }
+
+        .benefit-card:hover {
+            background: rgba(26, 26, 36, 0.85);
+            border-left-width: 8px;
+            box-shadow: 0 0 40px rgba(0, 240, 255, 0.3);
+            transform: translateX(10px);
+        }
+
+        .benefit-icon {
+            font-size: 3.5rem;
+            margin-bottom: 20px;
+            display: inline-block;
+            filter: drop-shadow(0 0 15px var(--neon-cyan));
+        }
+
+        .benefit-card h4 {
+            font-family: 'Orbitron', sans-serif;
+            color: var(--neon-cyan);
+            font-size: 1.6rem;
+            margin-bottom: 15px;
+        }
+
+        .benefit-card p {
+            color: #bbb;
+            line-height: 1.7;
+            font-size: 1.05rem;
+        }
+
+        /* Demo Section */
+        .demo-section {
+            padding: 120px 0;
+            background: linear-gradient(180deg, var(--deep-black), var(--dark-gray));
+            position: relative;
+            z-index: 2;
+        }
+
+        .demo-card {
+            background: rgba(26, 26, 36, 0.7);
+            border: 2px solid rgba(0, 240, 255, 0.3);
+            border-radius: 30px;
+            padding: 50px;
+            text-align: center;
+            transition: 0.5s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .demo-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(0, 240, 255, 0.1), transparent 70%);
+            animation: rotateBg 10s linear infinite;
+        }
+
+        @keyframes rotateBg {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .demo-card:hover {
+            border-color: var(--neon-cyan);
+            box-shadow: 0 0 70px rgba(0, 240, 255, 0.5);
+            transform: scale(1.02);
+        }
+
+        .demo-img {
+            width: 100%;
+            border-radius: 20px;
+            border: 3px solid var(--neon-cyan);
+            box-shadow: 0 0 50px rgba(0, 240, 255, 0.4);
+            transition: 0.5s;
+            position: relative;
+            z-index: 1;
+        }
+
+        .demo-card:hover .demo-img {
+            box-shadow: 0 0 80px rgba(0, 240, 255, 0.6);
+            transform: scale(1.02);
+        }
+
+        .demo-card h4 {
+            font-family: 'Orbitron', sans-serif;
+            color: var(--neon-cyan);
+            font-size: 1.8rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        .demo-card p {
+            color: #bbb;
+            font-size: 1.1rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* About Section */
+        .about-section {
+            padding: 120px 0;
+            position: relative;
+            z-index: 2;
+        }
+
+        .about-card {
+            background: rgba(26, 26, 36, 0.6);
+            border: 2px solid rgba(0, 240, 255, 0.2);
+            border-radius: 25px;
+            padding: 50px;
+        }
+
+        .about-card p {
+            font-size: 1.2rem;
+            line-height: 2;
+            color: #ddd;
+        }
+
+        .tech-stack {
+            display: flex;
+            justify-content: center;
+            gap: 50px;
+            margin-top: 50px;
+            flex-wrap: wrap;
+        }
+
+        .tech-icon {
+            width: 90px;
+            height: 90px;
+            background: rgba(26, 26, 36, 0.8);
+            border: 2px solid rgba(0, 240, 255, 0.3);
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+            transition: 0.5s;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .tech-icon::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 0;
+            height: 0;
+            background: radial-gradient(circle, rgba(0, 240, 255, 0.3), transparent);
+            border-radius: 50%;
+            transition: 0.5s;
+        }
+
+        .tech-icon:hover::before {
+            width: 200%;
+            height: 200%;
+        }
+
+        .tech-icon:hover {
+            border-color: var(--neon-cyan);
+            box-shadow: 0 0 40px var(--neon-cyan);
+            transform: translateY(-15px) rotateY(360deg);
+        }
+
+        /* Footer */
+        footer {
+            background: rgba(10, 10, 15, 0.95);
+            border-top: 2px solid var(--neon-cyan);
+            padding: 50px 0;
+            position: relative;
+            overflow: hidden;
+            z-index: 2;
+        }
+
+        .footer-flow {
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--neon-cyan), var(--neon-violet), transparent);
+            animation: flowLine 4s linear infinite;
+        }
+
+        @keyframes flowLine {
+            0% { left: -100%; }
+            100% { left: 100%; }
+        }
+
+        .social-icon {
+            display: inline-block;
+            width: 60px;
+            height: 60px;
+            background: rgba(0, 240, 255, 0.1);
+            border: 2px solid var(--neon-cyan);
+            border-radius: 50%;
+            line-height: 56px;
+            text-align: center;
+            margin: 0 15px;
+            font-size: 1.8rem;
+            color: var(--neon-cyan);
+            transition: 0.5s;
+        }
+
+        .social-icon:hover {
+            background: var(--neon-cyan);
+            color: var(--deep-black);
+            box-shadow: 0 0 40px var(--neon-cyan);
+            transform: translateY(-10px) rotateZ(360deg);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .hero h1 { font-size: 3rem; }
+            .hero p { font-size: 1.2rem; }
+            .section-title { font-size: 2.5rem; }
+            .drone-container { width: 250px; height: 250px; }
+            .step-card { padding: 30px; }
+            .cta-btn { padding: 15px 35px; font-size: 1rem; }
+        }
+    </style>
+</head>
+<body>
+    <!-- Custom Cursor -->
+    <div class="cursor"></div>
+    <div class="cursor-follower"></div>
+    
+    <!-- Animated Background -->
+    <div class="bg-animated">
+        <div class="circuit-grid"></div>
+    </div>
+
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-glass fixed-top">
+        <div class="container">
+            <a class="navbar-brand" href="#home">⚡ InsulaAI</a>
+            <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" style="color: var(--neon-cyan);">
+                <i class="bi bi-list" style="font-size: 2rem; color: var(--neon-cyan);"></i>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item"><a class="nav-link" href="#home">Home</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#features">Features</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#how">How It Works</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#why">Why</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#demo">AI Demo</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#about">About</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero" id="home">
+        <div class="container">
+            <div class="hero-content">
+                <h1 class="hero-title">Empowering Drones with Vision</h1>
+                <p class="hero-subtitle">AI-driven detection of damaged powerline insulators — anytime, any weather.</p>
+                
+                <div class="drone-container">
+                    <div class="drone-glow"></div>
+                    <svg class="drone-svg" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+                        <defs>
+                            <linearGradient id="grad1" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" style="stop-color:#00f0ff;stop-opacity:1" />
+                                <stop offset="100%" style="stop-color:#bf00ff;stop-opacity:1" />
+                            </linearGradient>
+                            <linearGradient id="grad2" x1="0%" y1="0%" x2="100%" y2="0%">
+                                <stop offset="0%" style="stop-color:#bf00ff;stop-opacity:1" />
+                                <stop offset="100%" style="stop-color:#ffaa00;stop-opacity:1" />
+                            </linearGradient>
+                        </defs>
+                        <circle class="drone-circle" cx="100" cy="100" r="45" fill="none" stroke="url(#grad1)" stroke-width="2"/>
+                        <circle class="drone-circle" cx="100" cy="100" r="35" fill="none" stroke="url(#grad2)" stroke-width="2"/>
+                        <circle class="drone-circle" cx="100" cy="100" r="25" fill="none" stroke="url(#grad1)" stroke-width="2"/>
+                        <line class="drone-line" x1="45" y1="45" x2="155" y2="155" stroke="url(#grad2)" stroke-width="2"/>
+                        <line class="drone-line" x1="155" y1="45" x2="45" y2="155" stroke="url(#grad2)" stroke-width="2"/>
+                        <circle class="drone-prop" cx="45" cy="45" r="18" fill="none" stroke="url(#grad1)" stroke-width="2"/>
+                        <circle class="drone-prop" cx="155" cy="45" r="18" fill="none" stroke="url(#grad1)" stroke-width="2"/>
+                        <circle class="drone-prop" cx="45" cy="155" r="18" fill="none" stroke="url(#grad1)" stroke-width="2"/>
+                        <circle class="drone-prop" cx="155" cy="155" r="18" fill="none" stroke="url(#grad1)" stroke-width="2"/>
+                    </svg>
+                </div>
+                
+                <div class="cta-buttons">
+                    <button class="cta-btn">Try Live Detection</button>
+                    <button class="cta-btn cta-btn-secondary">Learn How It Works</button>
+                </div>
+            </div>
+        </div>
+        <div class="scroll-indicator">
+            <span>Scroll</span>
+            <div class="scroll-arrow"></div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="features" id="features">
+        <div class="container">
+            <h2 class="section-title">Cutting-Edge Features</h2>
+            <div class="row g-4">
+                <div class="col-md-6 col-lg-3">
+                    <div class="feature-card">
+                        <div class="feature-icon"><i class="bi bi-gear-fill"></i></div>
+                        <h3>AI Fault Detection</h3>
+                        <p>Advanced YOLOv8 model accurately identifies insulator defects with precision in real-time processing.</p>
+                    </div>
+                </div>
+                <div class="col-md-6 col-lg-3">
+                    <div class="feature-card">
+                        <div class="feature-icon"><i class="bi bi-cloud-rain-fill"></i></div>
+                        <h3>Weather Adaptive</h3>
+                        <p>Performs consistently under fog, rain, dust, and challenging environmental conditions.</p>
+                    </div>
+                </div>
+                <div class="col-md-6 col-lg-3">
+                    <div class="feature-card">
+                        <div class="feature-icon"><i class="bi bi-lightning-charge-fill"></i></div>
+                        <h3>Real-Time Vision</h3>
+                        <p>Process drone footage instantly with sub-second response times for immediate insights.</p>
+                    </div>
+                </div>
+                <div class="col-md-6 col-lg-3">
+                    <div class="feature-card">
+                        <div class="feature-icon"><i class="bi bi-bar-chart-fill"></i></div>
+                        <h3>Visual Reports</h3>
+                        <p>Generate comprehensive inspection reports with actionable insights and analytics.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- How It Works -->
+    <section class="how-it-works" id="how">
+        <div class="container">
+            <h2 class="section-title">How It Works</h2>
+            <div class="steps-wrapper">
+                <div class="step-item" data-step="1">
+                    <div class="step-card">
+                        <div class="step-number">01</div>
+                        <h3>Upload Drone Image/Video</h3>
+                        <p>Simply upload your UAV-captured footage of powerline insulators through our intuitive interface. Our system accepts multiple formats and processes them instantly.</p>
+                    </div>
+                    <div class="energy-connector"></div>
+                </div>
+                
+                <div class="step-item" data-step="2">
+                    <div class="step-card">
+                        <div class="step-number">02</div>
+                        <h3>AI Processes & Detects</h3>
+                        <p>Our YOLOv8-eRFD-AP model analyzes the imagery using advanced deep learning, identifying insulators and detecting any faults, damage, or anomalies with exceptional accuracy.</p>
+                    </div>
+                    <div class="energy-connector"></div>
+                </div>
+                
+                <div class="step-item" data-step="3">
+                    <div class="step-card">
+                        <div class="step-number">03</div>
+                        <h3>Generate Detailed Report</h3>
+                        <p>Receive a comprehensive analysis with health status, precise fault locations, severity ratings, and actionable maintenance recommendations for your infrastructure.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Why It Matters -->
+    <section class="why-matters" id="why">
+        <div class="container">
+            <h2 class="section-title">Why Insulator Inspection Matters</h2>
+            <div class="row">
+                <div class="col-lg-6">
+                    <div class="benefit-card">
+                        <div class="benefit-icon">⚡</div>
+                        <h4>Prevent Power Failures</h4>
+                        <p>Early detection of insulator damage prevents catastrophic power outages and protects critical infrastructure, ensuring continuous power supply to communities.</p>
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    <div class="benefit-card">
+                        <div class="benefit-icon">🧠</div>
+                        <h4>Save Maintenance Costs</h4>
+                        <p>AI-powered automation reduces inspection time by 80% and eliminates manual labor expenses, optimizing resource allocation and operational efficiency.</p>
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    <div class="benefit-card">
+                        <div class="benefit-icon">🌍</div>
+                        <h4>Safer Environment</h4>
+                        <p>Human-free inspection eliminates risks associated with high-voltage equipment and dangerous heights, protecting personnel from hazardous work conditions.</p>
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    <div class="benefit-card">
+                        <div class="benefit-icon">🎯</div>
+                        <h4>Precision Analytics</h4>
+                        <p>Machine learning provides consistent, accurate assessments unaffected by human error or fatigue, delivering reliable data for informed decision-making.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Demo Section -->
+    <section class="demo-section" id="demo">
+        <div class="container">
+            <h2 class="section-title">See It in Action</h2>
+            <div class="row justify-content-center">
+                <div class="col-lg-9">
+                    <div class="demo-card">
+                        <svg class="demo-img" viewBox="0 0 900 550" xmlns="http://www.w3.org/2000/svg">
+                            <rect width="900" height="550" fill="#1a1a24"/>
+                            <line x1="100" y1="275" x2="800" y2="275" stroke="#00f0ff" stroke-width="4" opacity="0.6"/>
+                            
+                            <circle cx="220" cy="275" r="35" fill="none" stroke="#00ff00" stroke-width="3"/>
+                            <circle cx="220" cy="275" r="28" fill="none" stroke="#00ff00" stroke-width="2" opacity="0.5"/>
+                            
+                            <circle cx="450" cy="275" r="35" fill="none" stroke="#ff0000" stroke-width="3"/>
+                            <circle cx="450" cy="275" r="28" fill="none" stroke="#ff0000" stroke-width="2" opacity="0.5"/>
+                            <line x1="420" y1="245" x2="480" y2="305" stroke="#ff0000" stroke-width="3"/>
+                            <line x1="480" y1="245" x2="420" y2="305" stroke="#ff0000" stroke-width="3"/>
+                            
+                            <circle cx="680" cy="275" r="35" fill="none" stroke="#00ff00" stroke-width="3"/>
+                            <circle cx="680" cy="275" r="28" fill="none" stroke="#00ff00" stroke-width="2" opacity="0.5"/>
+                            
+                            <rect x="410" y="235" width="80" height="80" fill="none" stroke="#ff0000" stroke-width="3" stroke-dasharray="8,4"/>
+                            
+                            <text x="450" y="350" text-anchor="middle" fill="#ff0000" font-size="22" font-family="Orbitron" font-weight="bold">⚠ FAULT DETECTED</text>
+                            <text x="450" y="380" text-anchor="middle" fill="#ff6666" font-size="16" font-family="Inter">Confidence: 97.3%</text>
+                            
+                            <text x="220" y="335" text-anchor="middle" fill="#00ff00" font-size="16" font-family="Inter">✓ HEALTHY</text>
+                            <text x="680" y="335" text-anchor="middle" fill="#00ff00" font-size="16" font-family="Inter">✓ HEALTHY</text>
+                            
+                            <rect x="20" y="20" width="200" height="80" fill="rgba(0,0,0,0.7)" stroke="#00f0ff" stroke-width="2" rx="10"/>
+                            <text x="120" y="50" text-anchor="middle" fill="#00f0ff" font-size="16" font-family="Orbitron">LIVE ANALYSIS</text>
+                            <text x="120" y="75" text-anchor="middle" fill="#ffffff" font-size="14" font-family="Inter">Processing...</text>
+                        </svg>
+                        <h4 class="mt-5">YOLOv8 Model Detecting Faults in Real Time</h4>
+                        <p class="text-muted mb-4">Our AI identifies damaged insulators with bounding box annotations, confidence scores, and instant classification results.</p>
+                        <button class="cta-btn mt-3">Run a Test Image</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- About Section -->
+    <section class="about-section" id="about">
+        <div class="container">
+            <h2 class="section-title">The Technology Behind InsulaAI</h2>
+            <div class="row justify-content-center">
+                <div class="col-lg-10">
+                    <div class="about-card">
+                        <p>
+                            Our hybrid deep learning model leverages <strong style="color: var(--neon-cyan);">YOLOv8</strong> architecture combined with 
+                            <strong style="color: var(--neon-violet);">enhanced domain generalization techniques (eRFD-AP)</strong> to identify faulty insulators with 
+                            exceptional accuracy — even under adverse weather conditions like fog, rain, and glare. 
+                            The system processes UAV-captured imagery in real-time, enabling rapid infrastructure assessment 
+                            and proactive maintenance scheduling. Our model achieves 97%+ accuracy across diverse environmental conditions.
+                        </p>
+                        <div class="tech-stack">
+                            <div class="tech-icon" title="Python"><i class="bi bi-code-square"></i></div>
+                            <div class="tech-icon" title="YOLOv8"><i class="bi bi-eye-fill"></i></div>
+                            <div class="tech-icon" title="Firebase"><i class="bi bi-fire"></i></div>
+                            <div class="tech-icon" title="OpenCV"><i class="bi bi-camera-video-fill"></i></div>
+                            <div class="tech-icon" title="Flask"><i class="bi bi-server"></i></div>
+                            <div class="tech-icon" title="TensorFlow"><i class="bi bi-cpu-fill"></i></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-flow"></div>
+        <div class="container text-center">
+            <div class="mb-4">
+                <a href="#" class="social-icon"><i class="bi bi-linkedin"></i></a>
+                <a href="#" class="social-icon"><i class="bi bi-github"></i></a>
+                <a href="#" class="social-icon"><i class="bi bi-envelope-fill"></i></a>
+            </div>
+            <p style="color: #aaa; font-size: 1.1rem;">
+                Developed with ⚡ by Your Name | Powered by YOLOv8 + UAV Vision + Firebase
+            </p>
+            <p style="color: #666; font-size: 0.95rem; margin-top: 10px;">
+                © 2025 InsulaAI. All rights reserved.
+            </p>
+        </div>
+    </footer>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- GSAP -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+
+    <script>
+        // Initialize GSAP
+        gsap.registerPlugin(ScrollTrigger);
+
+        // Custom Cursor
+        const cursor = document.querySelector('.cursor');
+        const cursorFollower = document.querySelector('.cursor-follower');
+        let mouseX = 0, mouseY = 0;
+        let followerX = 0, followerY = 0;
+
+        document.addEventListener('mousemove', (e) => {
+            mouseX = e.clientX;
+            mouseY = e.clientY;
+        });
+
+        function animateCursor() {
+            cursor.style.left = mouseX + 'px';
+            cursor.style.top = mouseY + 'px';
+            
+            followerX += (mouseX - followerX) * 0.1;
+            followerY += (mouseY - followerY) * 0.1;
+            cursorFollower.style.left = followerX + 'px';
+            cursorFollower.style.top = followerY + 'px';
+            
+            requestAnimationFrame(animateCursor);
+        }
+        animateCursor();
+
+        // Click Ripple Effect
+        document.addEventListener('click', (e) => {
+            const ripple = document.createElement('div');
+            ripple.className = 'click-ripple';
+            ripple.style.left = e.clientX - 10 + 'px';
+            ripple.style.top = e.clientY - 10 + 'px';
+            document.body.appendChild(ripple);
+            
+            // Create sparkle particles
+            for (let i = 0; i < 12; i++) {
+                createSparkle(e.clientX, e.clientY);
+            }
+            
+            setTimeout(() => ripple.remove(), 1000);
+        });
+
+        // Sparkle Particles
+        function createSparkle(x, y) {
+            const sparkle = document.createElement('div');
+            sparkle.style.position = 'fixed';
+            sparkle.style.left = x + 'px';
+            sparkle.style.top = y + 'px';
+            sparkle.style.width = '4px';
+            sparkle.style.height = '4px';
+            sparkle.style.background = Math.random() > 0.5 ? '#00f0ff' : '#bf00ff';
+            sparkle.style.borderRadius = '50%';
+            sparkle.style.pointerEvents = 'none';
+            sparkle.style.zIndex = '9996';
+            sparkle.style.boxShadow = `0 0 10px ${sparkle.style.background}`;
+            document.body.appendChild(sparkle);
+            
+            const angle = (Math.PI * 2 * Math.random());
+            const velocity = 30 + Math.random() * 40;
+            
+            gsap.to(sparkle, {
+                x: Math.cos(angle) * velocity,
+                y: Math.sin(angle) * velocity - 20,
+                opacity: 0,
+                duration: 0.8 + Math.random() * 0.4,
+                ease: 'power2.out',
+                onComplete: () => sparkle.remove()
+            });
+        }
+
+        // Floating Particles Background
+        function createFloatingParticles() {
+            for (let i = 0; i < 50; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.top = Math.random() * 100 + '%';
+                particle.style.animationDuration = (5 + Math.random() * 10) + 's';
+                particle.style.animationDelay = Math.random() * 5 + 's';
+                
+                const colors = ['#00f0ff', '#bf00ff', '#ffaa00'];
+                particle.style.background = colors[Math.floor(Math.random() * colors.length)];
+                
+                document.body.appendChild(particle);
+                
+                gsap.to(particle, {
+                    y: '-100vh',
+                    x: (Math.random() - 0.5) * 200,
+                    duration: 15 + Math.random() * 10,
+                    repeat: -1,
+                    ease: 'none',
+                    delay: Math.random() * 5
+                });
+            }
+        }
+        createFloatingParticles();
+
+        // Navbar Scroll Effect
+        window.addEventListener('scroll', () => {
+            const navbar = document.querySelector('.navbar-glass');
+            if (window.scrollY > 50) {
+                navbar.classList.add('scrolled');
+            } else {
+                navbar.classList.remove('scrolled');
+            }
+        });
+
+        // Hero Animations
+        gsap.fromTo('.hero-title',
+            { opacity: 0, y: 60 },
+            { opacity: 1, y: 0, duration: 1.2, delay: 0.3, ease: 'power3.out' }
+        );
+
+        gsap.fromTo('.hero-subtitle',
+            { opacity: 0, y: 40 },
+            { opacity: 1, y: 0, duration: 1, delay: 0.6, ease: 'power3.out' }
+        );
+
+        gsap.fromTo('.drone-container',
+            { opacity: 0, scale: 0.3, rotation: -90 },
+            { opacity: 1, scale: 1, rotation: 0, duration: 1.5, delay: 0.9, ease: 'back.out(1.7)' }
+        );
+
+        gsap.fromTo('.cta-buttons',
+            { opacity: 0, y: 30 },
+            { opacity: 1, y: 0, duration: 1, delay: 1.4, ease: 'power3.out' }
+        );
+
+        // SVG Drawing Animation
+        const droneCircles = document.querySelectorAll('.drone-circle');
+        const droneLines = document.querySelectorAll('.drone-line');
+        const droneProps = document.querySelectorAll('.drone-prop');
+
+        droneCircles.forEach((circle, i) => {
+            const length = circle.getTotalLength();
+            circle.style.strokeDasharray = length;
+            circle.style.strokeDashoffset = length;
+            gsap.to(circle, {
+                strokeDashoffset: 0,
+                duration: 1.5,
+                delay: 1.2 + i * 0.1,
+                ease: 'power2.out'
+            });
+        });
+
+        droneLines.forEach((line, i) => {
+            const length = line.getTotalLength();
+            line.style.strokeDasharray = length;
+            line.style.strokeDashoffset = length;
+            gsap.to(line, {
+                strokeDashoffset: 0,
+                duration: 1,
+                delay: 1.8 + i * 0.1,
+                ease: 'power2.out'
+            });
+        });
+
+        droneProps.forEach((prop, i) => {
+            const length = prop.getTotalLength();
+            prop.style.strokeDasharray = length;
+            prop.style.strokeDashoffset = length;
+            gsap.to(prop, {
+                strokeDashoffset: 0,
+                duration: 1,
+                delay: 2.2 + i * 0.1,
+                ease: 'power2.out'
+            });
+        });
+
+        // Feature Cards Animation
+        gsap.utils.toArray('.feature-card').forEach((card, i) => {
+            gsap.fromTo(card,
+                { opacity: 0, y: 80, scale: 0.9 },
+                {
+                    opacity: 1,
+                    y: 0,
+                    scale: 1,
+                    duration: 0.8,
+                    scrollTrigger: {
+                        trigger: card,
+                        start: 'top 85%',
+                        toggleActions: 'play none none none'
+                    }
+                }
+            );
+        });
+
+        // How It Works - Step by Step with Energy Flow
+        const stepItems = document.querySelectorAll('.step-item');
+        
+        stepItems.forEach((step, index) => {
+            const card = step.querySelector('.step-card');
+            const connector = step.querySelector('.energy-connector');
+            
+            ScrollTrigger.create({
+                trigger: step,
+                start: 'top 70%',
+                onEnter: () => {
+                    // Animate step card
+                    gsap.to(step, {
+                        opacity: 1,
+                        x: 0,
+                        duration: 0.8,
+                        ease: 'power3.out'
+                    });
+                    
+                    // Add active class
+                    card.classList.add('active');
+                    
+                    // Animate connector if not last step
+                    if (connector) {
+                        setTimeout(() => {
+                            connector.classList.add('active');
+                            gsap.fromTo(connector,
+                                { scaleY: 0, transformOrigin: 'top' },
+                                { scaleY: 1, duration: 1.5, ease: 'power2.inOut' }
+                            );
+                        }, 500);
+                    }
+                }
+            });
+        });
+
+        // Benefit Cards Animation
+        gsap.utils.toArray('.benefit-card').forEach((card, i) => {
+            gsap.fromTo(card,
+                { opacity: 0, x: -60 },
+                {
+                    opacity: 1,
+                    x: 0,
+                    duration: 0.8,
+                    delay: i * 0.1,
+                    scrollTrigger: {
+                        trigger: card,
+                        start: 'top 85%',
+                        toggleActions: 'play none none none'
+                    }
+                }
+            );
+        });
+
+        // Demo Card Animation
+        gsap.fromTo('.demo-card',
+            { opacity: 0, scale: 0.9, y: 50 },
+            {
+                opacity: 1,
+                scale: 1,
+                y: 0,
+                duration: 1,
+                scrollTrigger: {
+                    trigger: '.demo-card',
+                    start: 'top 80%',
+                    toggleActions: 'play none none none'
+                }
+            }
+        );
+
+        // Tech Icons Animation
+        gsap.utils.toArray('.tech-icon').forEach((icon, i) => {
+            gsap.fromTo(icon,
+                { opacity: 0, y: 60, rotateY: -180 },
+                {
+                    opacity: 1,
+                    y: 0,
+                    rotateY: 0,
+                    duration: 0.8,
+                    delay: i * 0.1,
+                    scrollTrigger: {
+                        trigger: icon,
+                        start: 'top 90%',
+                        toggleActions: 'play none none none'
+                    }
+                }
+            );
+        });
+
+        // Smooth Scroll
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    window.scrollTo({
+                        top: target.offsetTop - 80,
+                        behavior: 'smooth'
+                    });
+                }
+            });
+        });
+
+        // Parallax Hero
+        gsap.to('.hero-content', {
+            y: 150,
+            opacity: 0.5,
+            scrollTrigger: {
+                trigger: '.hero',
+                start: 'top top',
+                end: 'bottom top',
+                scrub: 1
+            }
+        });
+
+        // Button Hover Magic
+        document.querySelectorAll('.cta-btn, .feature-card, .benefit-card, .demo-card').forEach(el => {
+            el.addEventListener('mouseenter', function(e) {
+                const rect = this.getBoundingClientRect();
+                for (let i = 0; i < 8; i++) {
+                    setTimeout(() => {
+                        createSparkle(
+                            rect.left + Math.random() * rect.width,
+                            rect.top + Math.random() * rect.height
+                        );
+                    }, i * 50);
+                }
+            });
+        });
+
+        // Scroll Magic Trail
+        let scrollParticles = [];
+        window.addEventListener('scroll', () => {
+            if (Math.random() > 0.7) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.top = window.scrollY + window.innerHeight * Math.random() + 'px';
+                document.body.appendChild(particle);
+                
+                gsap.to(particle, {
+                    y: -200,
+                    opacity: 0,
+                    duration: 2,
+                    ease: 'power2.out',
+                    onComplete: () => particle.remove()
+                });
+            }
+        });
+
+        // Section Title Animations
+        gsap.utils.toArray('.section-title').forEach(title => {
+            gsap.fromTo(title,
+                { opacity: 0, y: 50 },
+                {
+                    opacity: 1,
+                    y: 0,
+                    duration: 1,
+                    scrollTrigger: {
+                        trigger: title,
+                        start: 'top 85%',
+                        toggleActions: 'play none none none'
+                    }
+                }
+            );
+        });
+    </script>
+</body>
+</html>

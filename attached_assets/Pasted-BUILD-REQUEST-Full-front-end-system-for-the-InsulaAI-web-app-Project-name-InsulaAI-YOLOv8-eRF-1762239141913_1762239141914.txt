@@ -1,0 +1,339 @@
+BUILD REQUEST: Full front-end system for the InsulaAI web app.
+Project name: “InsulaAI — YOLOv8-eRFD-AP: UAV-Based Insulator Inspection Under Adverse Weather Conditions”
+
+GOAL:
+Create a production-ready, componentized, multi-page front-end project (HTML/CSS/JS) that:
+- Reuses the exact **onboarding / form visual layout** shown in the supplied screenshots (two-pane onboarding with left form, right imagery).
+- Adds the user’s existing particle/visual effect (already created) and builds additional **highly polished animations and magic** on top.
+- Uses **Bootstrap 5** for core layout & icons, **Tailwind utility classes** for quick styling, and **GSAP (GreenSock)** for advanced animations.
+- Integrates **Firebase** for Auth and Firestore (stubs + instructions).
+- Produces fully reusable components, a clear folder/file structure and a `replit.md` with instructions describing all pages, components, and future backend integration (Flask + Python).
+- Includes pages: landing, login, signup, onboarding (multi-step), input/upload page, processing page (with ETA & historical info), results & analysis page, user dashboard & history page, and common components.
+
+IMPORTANT: The user already has particle animations and a two-pane onboarding layout (like the screenshots). Use that as the **base style** and do *not* overwrite it — **import and reuse** the particle effect and the onboarding layout. On top of that, add extra animated effects described below.
+
+DELIVERABLES (files to generate):
+- index.html (Landing)
+- login.html
+- signup.html
+- onboarding.html
+- upload.html (input page)
+- processing.html (processing / ETA / historical info)
+- result.html (result & analysis)
+- dashboard.html (history + account)
+- /components/
+  - header.html (or header partial)
+  - footer.html
+  - upload-card.html
+  - result-card.html
+  - modal-help.html
+  - auth-forms.html
+- /css/
+  - tailwind.css (import + config)
+  - style.css (custom)
+- /js/
+  - main.js (global)
+  - gsap-animations.js (all GSAP timelines)
+  - firebase.js (Firebase init + auth wrappers)
+  - api-shim.js (placeholder for backend calls)
+- replit.md (detailed project doc & future instructions)
+- README.md
+- assets/ (images, icons, svg)
+- components.json (list of components and props for reuse)
+
+PLEASE follow the full sections below exactly.
+
+--------------------------------------------------------------------------------
+A. GLOBAL STYLE & UX REQUIREMENTS (master design rules)
+--------------------------------------------------------------------------------
+1. Base visuals:
+   - Use the supplied onboarding screenshot style as the base: two-column layout with left dark panel for forms and right large media panel (image/earth/visual). Maintain fonts, sizes, spacing visible in screenshots.
+   - Use a dark base (#06060a / deep navy) with subtle gradient overlays. Accent glows can be neon cyan, violet, and amber — but keep overall contrast high and text very legible.
+
+2. Animation libraries:
+   - Use **GSAP** + **ScrollTrigger** for all scroll and timeline animations.
+   - Use **Bootstrap 5** for core components and **Bootstrap Icons** for iconography (not the previous icons) — map specific icons for actions (upload, cloud, analysis, download).
+   - Integrate the user’s existing particle effect as `assets/particles.js` or `assets/particle-effect.js` and initialize it on pages that have full-screen background (landing and dashboard). DO NOT replace it — import and reuse.
+
+3. Motion Language (make it feel alive & “powered”):
+   - “Energy line” animation: A thin SVG polyline that animates from left to right connecting cards/steps. As the line reaches each step, that step "powers up" (glow/pulse).
+   - “Charge” effect on transitions: small electric sparks run along edges of cards when a step completes.
+   - Hover micro-interactions: soft lift and neon outline on buttons/cards.
+   - Typewriter LED flicker for leading slogans in hero.
+   - Cursor trail: subtle glow follows cursor (disabled on mobile for performance).
+
+4. Accessibility & performance:
+   - All interactive elements have focus states and keyboard accessibility.
+   - Use `prefers-reduced-motion` to reduce animation intensity.
+   - Lazy load images, and defer heavy animations on mobile.
+
+--------------------------------------------------------------------------------
+B. COMPONENTS & REUSE (exact component list + API)
+--------------------------------------------------------------------------------
+Create reusable components (each as an HTML partial + CSS class + JS init function). For each component define props or attributes.
+
+1. `Header` (component)
+   - Props: `logoText`, `menuItems` array, `showUserAvatar` boolean
+   - Behavior: sticky glass navbar with search icon, login/register / user menu. On small screens collapse to hamburger.
+
+2. `Footer` (component)
+   - Includes: links, small scrolling neon line animation, social icons.
+
+3. `AuthCard` (component)
+   - Reusable for login & signup pages.
+   - Props: `mode` ("login" | "signup"), `fields` (list), `ctaText`
+   - Should show micro-animations when submitting (progress pulse).
+
+4. `OnboardWizard` (component)
+   - Multi-step linear wizard that supports steps with icons & small descriptions.
+   - Exposes `onComplete(userData)` callback (wired to Firebase save).
+   - Visual: left column uses screenshot-style form; right column shows large illustrative media with glowing edge.
+
+5. `UploadCard` (component)
+   - Drag & drop area, preview, select file, choose detection options (checkboxes).
+   - Props: `acceptedFileTypes`, `maxFileSize`, `options` (list)
+   - Visual: animated border that pulses while file is being processed.
+
+6. `ProcessingPanel` (component)
+   - Shows animated AI pipeline: "Image uploaded" → "Pre-processing" → "Model inferencing" → "Report generation".
+   - Shows ETA (estimated time) computed client-side (simulate), progress bar, dynamic tips/info that change while processing.
+   - Shows historical insights card and short text: “Why insulator checks are important”.
+
+7. `ResultPanel` (component)
+   - Shows side-by-side original image and annotated image (with bounding boxes).
+   - Legend: color-coded meaning (Green = Healthy; Red = Faulty; Blue = Unclear).
+   - Detection summary: count, confidence, suggested action (e.g., “Schedule maintenance”).
+   - Explanatory overlay: each box is clickable — clicking opens a small animated explainer (modal or inline) that describes in plain language what this box means and why it matters.
+
+8. `HistoryCard` (component)
+   - Displays previous uploads, thumbnail, date, result summary. Reusable on dashboard.
+
+9. `HelpModal` (component)
+   - Short step-by-step "How to use" with animated micro-explanations.
+   - Includes a “Play demo” button that plays a short animation of the pipeline (use Lottie or CSS animation).
+
+10. `Toast` & `Confirmation` small components
+   - For showing success/error messages with subtle glow.
+
+All components should be implemented so they can be included via `include` or reusable `document.querySelector` and `initComponent()` JS functions. Provide a `components.json` listing each component's name, HTML file, CSS classes, and JS init signature.
+
+--------------------------------------------------------------------------------
+C. PAGE-BY-PAGE DETAILED INSTRUCTIONS
+--------------------------------------------------------------------------------
+
+### 1) index.html — LANDING PAGE
+- Use the supplied onboarding screenshots as a reference for layout proportions (left content, right visual). Integrate the user’s particle background but **muted** on landing (not full chaotic).
+- Sections:
+  1. Top header component.
+  2. Hero (center): LED-type headline (typewriter), subheading, two CTAs (“Try Live Detection” and “Learn How It Works”).
+     - Hero animation: the drone SVG in center should animate circuits that "power up" when hero loads. CTA glows with pulse.
+  3. Feature strip (animated connecting line): show four feature cards. When the line animates across cards they glow.
+  4. How-it-works: three-step with energy-line connecting them; line animates as user scrolls using GSAP ScrollTrigger.
+  5. Demo preview / CTA: small mockup of the app’s detection result (use placeholder annotated image).
+  6. Footer component.
+
+- Extra: small “floating badges” that show quick stats (e.g., “98% detection on clear images”) — these animate into view.
+
+### 2) login.html & signup.html
+- Keep the exact two-pane visual style used in screenshots:
+  - Left: form area (dark panel). Right: image / design.
+- Add these elements and behaviors:
+  - Social login placeholders (Google) — show buttons but mark as "setup next".
+  - When user logs in successfully, animate a small "digital gate opening" and navigate to onboarding.html or dashboard.
+  - Validate fields and show friendly inline errors with small shake + red outline animation.
+- On signup, after success, do a micro-animation “node created” and redirect to onboarding.
+
+### 3) onboarding.html (multi-step)
+- Use the screenshot layout exactly. Multi-step fields:
+  1. Basic: Full name, Organization (optional)
+  2. Reach source: Dropdown ("Social Media", "Friend", "College", "Search", "Other")
+  3. Role: (Student, Engineer, Researcher, Inspector)
+  4. Purpose: (Learning, Research, Field inspection, Demo)
+  5. Preferences: Email notifications (on/off), Preferred language
+- Each step transitions with GSAP; an energy line should visually connect step N to step N+1 with a traveling light. On step complete, trigger a small spark effect.
+- After final step, save user data to Firestore under `users/{uid}/profile`. Show success overlay with “Initialization complete” and a small 3s countdown animation to dashboard.
+
+### 4) upload.html (input page)
+- Purpose: full-featured upload UI.
+- Contains:
+  - `UploadCard` with drag/drop + preview.
+  - Option checkboxes:
+    - Detect type: {Broken, Dirty, Missing}
+    - Confidence threshold slider (0-100%)
+    - Simulate weather conditions toggle (Clear/Rain/Fog)
+  - Help toggle: a floating help button that opens `HelpModal`. The help modal contains a “scroll to see how to use” CTA that reveals inline instructions if user misses them.
+  - CTA: “Analyze Image”
+- UI nuance:
+  - When user submits, animate the `ProcessingPanel`.
+  - Show a small simulated ETA (e.g., "Expected time: 12s") with countdown and step animation.
+  - Save uploaded file temporarily to `localStorage` and send a base64 or placeholder to backend later.
+
+### 5) processing.html (processing page)
+- This page appears immediately when user triggers analysis.
+- It must show:
+  - Animated pipeline: four steps as described in components (Image Uploaded → Preprocessing → Model Inferencing → Report).
+  - Estimated time & dynamic tips: show small cards with facts about insulator inspection (why important, failure modes, safety impact, cost savings).
+  - Historical data summary: load example historical stats from Firestore stub `analysis-history` or show built-in example dataset showing prior detection rates, last inspection date for example tower.
+  - Make the progress feel alive: a glowing line runs across the page while processing. When each stage completes, show a spark and short description of what happened at that stage (e.g., “Applied fog compensation filter”).
+  - If process takes longer, give friendly suggestions: “This image has low light. We will apply enhancement; ETA may extend by 6s.”
+
+- Important: Everything here should look like real AI analysis (even if client-side simulated). Include an accessible narration text area (small toggle) where user can have the steps described in simple words (for non-technical users).
+
+### 6) result.html (result & analysis)
+- This is the "lab report" page — it must explain everything to a non-technical person.
+- Layout:
+  - Left: annotated result image (canvas) — interactive bounding boxes. Hovering a box opens an info card.
+  - Right: textual summary and a “plain English” explanation panel.
+- Required items:
+  1. **Summary Card**:
+     - Total insulators found
+     - Faulty: X (red)
+     - Healthy: Y (green)
+     - Confidence scores (average)
+     - Suggested next action (e.g., "Schedule field inspection within 7 days")
+  2. **Box legend** (color-coded).
+  3. **Explain like I’m 5** card — a single-paragraph plain English description of what the image shows.
+  4. **Technical details** collapsible: model version (YOLOv8-n / weights), inference time, weather simulation used, confidence distribution histogram (use Chart.js).
+  5. **Replay animation**: small play button replays the pipeline that produced the result with the same “energy line” animation going from upload → detection → result.
+  6. **Export**: Download annotated image (PNG) and Export full report (PDF) — generate via client-side library (html2canvas + jsPDF).
+  7. **Feedback**: user can flag false positive/negative. On flagging, show a tiny guided modal that lets them mark region and provide comment. Save to Firestore `user-feedback`.
+
+- Educational overlays:
+  - If user is unfamiliar with any term (e.g., “confidence”), add a small “?” icon that toggles a short animated explainer: text + micro animation showing what confidence represents using simple visuals.
+
+### 7) dashboard.html (user history)
+- Shows a timeline of past uploads and reports.
+- Clicking a past report opens `result.html` for that upload (use route param or modal).
+- Provide a summary stat bar: total scans, faults found, average confidence, last scanned date.
+
+--------------------------------------------------------------------------------
+D. FIREBASE SETUP & FILES
+--------------------------------------------------------------------------------
+1. `firebase.js` (place in /js/):
+   - Exports `initFirebase(config)`, `authSignUp({email, password, name})`, `authSignIn`, `authSignOut`, `saveUserProfile(uid, data)`, `saveScanResult(uid, scanObj)`, `getUserHistory(uid)`.
+   - Use placeholders for `firebaseConfig` and document how to paste actual config.
+   - All Firestore writes should follow structure:
+     - `users/{uid}/profile` → profile doc
+     - `users/{uid}/scans/{scanId}` → scan doc containing metadata, storage link, summary, raw results
+     - `global/analysis-history/{sampleId}` → sample historical stats for demo
+
+2. Authentication:
+   - Use Firebase Auth email/password flow.
+   - After signup, send user to onboarding and create `users/{uid}/profile` doc.
+
+3. Storage:
+   - Files can be stored in Firebase Storage: `scans/{uid}/{scanId}.png`.
+   - For the front-end demo, the agent can simulate storage by saving images to `assets/temp` and the README will instruct how to connect real Firebase Storage.
+
+4. Security rules:
+   - Add a sample `firestore.rules` snippet in `replit.md` showing basic protections.
+
+--------------------------------------------------------------------------------
+E. JS & ANIMATION IMPLEMENTATION DETAILS (GSAP specifics)
+--------------------------------------------------------------------------------
+1. Global GSAP timeline `gsap-animations.js`:
+   - `initHero()` animation sequence: typewriter headline, drone circuit power-up, CTA pulse.
+   - `initFeatureLine()` draws SVG polyline and animates stroke dashoffset to simulate traveling energy.
+   - `initWizardLine()` for onboarding: as user completes step, call `gsap.to` to move a glowing dot along the line to next step.
+   - `processingTimeline()` for ProcessingPanel: a sequence that advances stages and triggers UI updates.
+   - `resultReplay()` for replaying final result animations.
+
+2. Interactivity:
+   - Use canvas for drawing bounding boxes on result image. Provide `drawBoxes(boxes)` function that animates each box with scale-in + stroke glow.
+   - Export function uses `html2canvas` to capture result canvas and `jsPDF` to export a small report.
+
+3. Animations should respect `prefers-reduced-motion`. If user system setting reduces motion, fallback to simple transitions.
+
+--------------------------------------------------------------------------------
+F. replit.md — project documentation (must be thorough)
+--------------------------------------------------------------------------------
+Create `replit.md` that includes:
+1. Project summary & purpose (short paragraph).
+2. File/folder structure (list).
+3. How to run locally in Replit:
+   - Steps to install dependencies (if any), how to open on Replit.
+4. Firebase setup instructions:
+   - Where to paste Firebase config
+   - How to enable Auth, Firestore and Storage
+   - Example Firestore document structure
+   - Security rules copy/paste
+5. How to replace the demo API with Flask backend in future:
+   - Explain endpoints frontend expects:
+     - `POST /api/v1/analyze` → expects image form data; returns `{scanId, annotatedImageUrl, boxes, summary, metrics}`
+     - `GET /api/v1/scan/{scanId}` → returns saved scan results
+     - `POST /api/v1/feedback` → send user feedback
+   - Example Flask snippet to accept upload, call YOLOv8 (example command) and return result JSON.
+   - Explain where to put the trained model `best.pt` and how to call Ultralytics YOLO in Flask:
+     ```py
+     from ultralytics import YOLO
+     model = YOLO('best.pt')
+     results = model.predict(source=img_path)
+     ```
+6. How to hand this project to another Replit agent:
+   - Step-by-step prompt example that explains what we did, how components are named, where to find Firebase config, and how to continue.
+7. Testing checklist & QA steps.
+8. Notes about privacy & ethics (don’t expose real infrastructure keys, handle user data properly).
+
+--------------------------------------------------------------------------------
+G. CONTENT & UX COPY (exact texts)
+--------------------------------------------------------------------------------
+Include friendly, plain-language copy across pages. Examples:
+
+- Landing hero:
+  - Title: “Empowering Drones with Vision.”
+  - Sub: “AI-driven detection of damaged powerline insulators — anytime, any weather.”
+
+- Upload help text:
+  - “Tip: For best results, upload clear close-up drone images of the insulators. If your image is foggy, we will apply enhancement filters.”
+
+- Processing page facts samples:
+  - “Why insulator inspection matters: Damaged insulators can cause power outages, equipment damage, and fire risk. Automated inspection reduces risk and cost.”
+
+- Result plain-english:
+  - “Our AI found 3 insulators. Two look good. One shows a crack (red). We recommend scheduling field inspection. Confidence: 94%.”
+
+--------------------------------------------------------------------------------
+H. QUALITY & DELIVERY INSTRUCTIONS TO THE AGENT
+--------------------------------------------------------------------------------
+1. Use modular code, comment everything.
+2. Make all animations toggleable (a global `animationsEnabled` flag).
+3. Ensure every component has a small usage example in `components.json`.
+4. Create a `demo-data/` folder with sample images and sample JSON scan outputs.
+5. Include unit test stubs for critical front-end functions (e.g., `drawBoxes`, `formatSummary`).
+6. Produce a final `replit.md` that mentions the exact next steps to wire Flask backend and where to place `best.pt`, and sample Flask endpoints (copyable code).
+7. Return a commit/zip with all files and a runnable Replit project link or instructions.
+
+--------------------------------------------------------------------------------
+I. EXTRA: make pages visually explain results to non-technical users
+--------------------------------------------------------------------------------
+- For each technical metric (e.g., confidence, mAP, inference time), provide a tiny, animated explainer: icon + 1 sentence + visual (e.g., confidence bar fills).
+- Add “Explain” button next to each element; clicking plays a 3-5s micro-animation that visually demonstrates the meaning (e.g., confidence = how sure the AI is — show a progress bar filling to illustrate).
+
+--------------------------------------------------------------------------------
+J. FINAL NOTE (for the agent)
+--------------------------------------------------------------------------------
+- Use the user’s existing particle effect and onboarding layout exactly as the baseline — then layer all effects on top.
+- Make components reusable and include clear names, props, and initialization methods.
+- Keep an eye on performance: throttle heavy animations on mobile, lazy-load images, and avoid continuous canvas loops unless necessary.
+- At the end of work, generate `replit.md` describing everything above, plus a single block of text that another Replit agent can copy–paste to continue with Flask backend integration.
+
+--------------------------------------------------------------------------------
+END OF PROMPT
+--------------------------------------------------------------------------------
+
+INSTRUCTIONS FOR YOU (short):
+1. Paste the entire block above into your Replit AI prompt box (or other AI dev assistant).
+2. Tell the agent: “Generate the full front-end as described, bundle files, and produce replit.md.”
+3. When agent finishes, inspect `replit.md` — it will contain exact steps to add Flask backend and YOLOv8 integration.
+
+If you want, I can now:
+- Produce the **exact `replit.md` content** (fully written) for you to include in the prompt or to drop into the final project; **or**
+- Generate the **exact Firebase snippets** (`firebase.js`) and the **example Flask backend snippet** to paste into the replit.md.
+
+Which of those two should I produce next? (I’ll give the exact files/code you can paste directly.)  
+
+
+
+
+
+

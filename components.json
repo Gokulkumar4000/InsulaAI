@@ -1,0 +1,76 @@
+{
+  "components": [
+    {
+      "name": "Header",
+      "file": "components/header.html",
+      "description": "Reusable navigation header with logo, menu items, and auth buttons",
+      "css_classes": ["navbar-glass", "navbar-brand", "nav-link", "auth-btn"],
+      "props": {
+        "logoText": "InsulaAI",
+        "menuItems": ["Features", "How It Works", "Demo", "About"],
+        "showAuthButtons": true
+      }
+    },
+    {
+      "name": "AuthCard",
+      "files": ["login.html", "signup.html"],
+      "description": "Two-pane authentication layout with form on left and visual on right",
+      "css_classes": ["auth-container", "auth-card", "auth-title", "btn-submit"],
+      "props": {
+        "mode": "login | signup",
+        "title": "string",
+        "subtitle": "string",
+        "visualIcon": "Bootstrap icon class",
+        "visualTitle": "string",
+        "visualText": "string"
+      }
+    },
+    {
+      "name": "ScrollEffects",
+      "file": "js/scroll-effects.js",
+      "description": "Side scroll effects that appear on both sides when scrolling down",
+      "css_classes": ["scroll-effect-left", "scroll-effect-right", "scroll-particle-left", "scroll-particle-right"],
+      "init": "initScrollEffects()",
+      "behavior": "Automatically initializes on DOM ready, creates vertical lines and particles on scroll"
+    }
+  ],
+  "shared_styles": {
+    "file": "css/shared-styles.css",
+    "description": "Shared CSS variables and component styles across all pages",
+    "css_variables": {
+      "--neon-cyan": "#00f0ff",
+      "--neon-violet": "#bf00ff",
+      "--neon-amber": "#ffaa00",
+      "--neon-pink": "#ff006e",
+      "--deep-black": "#0a0a0f",
+      "--dark-gray": "#1a1a24"
+    }
+  },
+  "pages": [
+    {
+      "name": "Landing Page",
+      "file": "index.html",
+      "description": "Main landing page with hero, features, how it works, demo sections",
+      "features": ["Custom cursor", "Particle effects", "GSAP animations", "Side scroll effects", "Login/Register buttons in navbar"]
+    },
+    {
+      "name": "Login",
+      "file": "login.html",
+      "description": "User login page with two-pane design",
+      "features": ["Email/password form", "Remember me checkbox", "Links to signup and home"]
+    },
+    {
+      "name": "Sign Up",
+      "file": "signup.html",
+      "description": "User registration page with two-pane design",
+      "features": ["Full name, email, password fields", "Terms acceptance", "Links to login and home"]
+    }
+  ],
+  "future_pages": [
+    "onboarding.html - Multi-step wizard for user onboarding",
+    "upload.html - Image upload and analysis configuration",
+    "processing.html - Real-time processing with ETA",
+    "result.html - Analysis results with annotated images",
+    "dashboard.html - User dashboard with history"
+  ]
+}

@@ -187,8 +187,7 @@
         .input-icon {
             position: absolute;
             left: 18px;
-            top: 50%;
-            transform: translateY(-50%);
+            bottom: 16px;
             color: var(--neon-cyan);
             font-size: 1.2rem;
             z-index: 2;
@@ -372,10 +371,190 @@
             .onboard-container {
                 flex-direction: column;
             }
+            
+            .onboard-left, .onboard-right {
+                padding: 20px 15px;
+            }
+            
             .onboard-right {
                 border-left: none;
                 border-top: 2px solid rgba(0, 240, 255, 0.3);
-                padding: 30px;
+                min-height: auto;
+                padding: 30px 20px;
+            }
+            
+            .onboard-card {
+                padding: 25px 20px;
+                border-radius: 15px;
+                max-width: 100%;
+            }
+            
+            .onboard-title {
+                font-size: 1.5rem;
+                margin-bottom: 8px;
+            }
+            
+            .onboard-subtitle {
+                font-size: 0.85rem;
+                margin-bottom: 25px;
+            }
+            
+            .step-indicator {
+                margin-bottom: 25px;
+            }
+            
+            .step {
+                width: 30px;
+                height: 30px;
+                font-size: 0.75rem;
+            }
+            
+            .step-indicator::before {
+                top: 15px;
+            }
+            
+            .energy-line {
+                top: 15px;
+            }
+            
+            .form-step h3 {
+                font-size: 1.1rem !important;
+                margin-bottom: 18px !important;
+            }
+            
+            .input-group-custom {
+                margin-bottom: 18px;
+            }
+            
+            .form-label {
+                font-size: 0.8rem;
+                margin-bottom: 6px;
+            }
+            
+            .form-control, .form-select {
+                padding: 12px 15px 12px 42px;
+                font-size: 0.85rem;
+                border-radius: 10px;
+            }
+            
+            .input-icon {
+                left: 14px;
+                font-size: 1rem;
+                bottom: 12px;
+            }
+            
+            .form-select {
+                background-position: right 14px center;
+                background-size: 14px 11px;
+                padding-right: 40px;
+            }
+            
+            .btn-next, .btn-prev {
+                padding: 12px 25px;
+                font-size: 0.85rem;
+                letter-spacing: 1px;
+            }
+            
+            .progress-circle {
+                width: 140px;
+                height: 140px;
+                margin-bottom: 20px;
+            }
+            
+            .progress-circle svg {
+                width: 140px;
+                height: 140px;
+            }
+            
+            .progress-ring-circle, .progress-ring-fill {
+                stroke-width: 6;
+            }
+            
+            .progress-text {
+                font-size: 1.6rem;
+            }
+            
+            .visual-info h3 {
+                font-size: 1.2rem;
+                margin-bottom: 10px;
+            }
+            
+            .visual-info p {
+                font-size: 0.85rem;
+                line-height: 1.5;
+            }
+            
+            .form-check-label {
+                font-size: 0.85rem;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .onboard-left, .onboard-right {
+                padding: 15px 10px;
+            }
+            
+            .onboard-card {
+                padding: 20px 15px;
+            }
+            
+            .onboard-title {
+                font-size: 1.3rem;
+            }
+            
+            .onboard-subtitle {
+                font-size: 0.8rem;
+            }
+            
+            .step {
+                width: 26px;
+                height: 26px;
+                font-size: 0.7rem;
+            }
+            
+            .step-indicator::before {
+                top: 13px;
+            }
+            
+            .energy-line {
+                top: 13px;
+            }
+            
+            .form-step h3 {
+                font-size: 1rem !important;
+            }
+            
+            .btn-next, .btn-prev {
+                padding: 10px 20px;
+                font-size: 0.8rem;
+                width: 100%;
+            }
+            
+            .d-flex.justify-content-between {
+                flex-direction: column;
+                gap: 10px;
+            }
+            
+            .progress-circle {
+                width: 120px;
+                height: 120px;
+            }
+            
+            .progress-circle svg {
+                width: 120px;
+                height: 120px;
+            }
+            
+            .progress-text {
+                font-size: 1.4rem;
+            }
+            
+            .visual-info h3 {
+                font-size: 1.1rem;
+            }
+            
+            .visual-info p {
+                font-size: 0.8rem;
             }
         }
     </style>

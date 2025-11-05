@@ -242,6 +242,302 @@
             font-size: 1.2rem;
             margin: 0;
         }
+        
+        .profile-dropdown {
+            position: relative;
+            display: inline-block;
+        }
+        
+        .profile-button {
+            background: rgba(26, 26, 36, 0.8);
+            border: 2px solid rgba(0, 240, 255, 0.3);
+            color: var(--neon-cyan);
+            padding: 10px 20px;
+            border-radius: 50px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        
+        .profile-button:hover {
+            border-color: var(--neon-cyan);
+            box-shadow: 0 0 20px rgba(0, 240, 255, 0.4);
+            background: rgba(26, 26, 36, 0.95);
+        }
+        
+        .profile-button i {
+            font-size: 1.3rem;
+        }
+        
+        .dropdown-menu-custom {
+            position: absolute;
+            top: calc(100% + 10px);
+            right: 0;
+            background: rgba(26, 26, 36, 0.98);
+            backdrop-filter: blur(20px);
+            border: 2px solid rgba(0, 240, 255, 0.4);
+            border-radius: 15px;
+            min-width: 220px;
+            box-shadow: 0 8px 40px rgba(0, 240, 255, 0.3);
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-10px);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: 1000;
+        }
+        
+        .dropdown-menu-custom.show {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+        
+        .dropdown-menu-custom::before {
+            content: '';
+            position: absolute;
+            top: -8px;
+            right: 20px;
+            width: 0;
+            height: 0;
+            border-left: 8px solid transparent;
+            border-right: 8px solid transparent;
+            border-bottom: 8px solid rgba(0, 240, 255, 0.4);
+        }
+        
+        .dropdown-item-custom {
+            padding: 12px 20px;
+            color: #ddd;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            transition: all 0.3s ease;
+            border-bottom: 1px solid rgba(0, 240, 255, 0.1);
+            cursor: pointer;
+        }
+        
+        .dropdown-item-custom:last-child {
+            border-bottom: none;
+        }
+        
+        .dropdown-item-custom:hover {
+            background: rgba(0, 240, 255, 0.1);
+            color: var(--neon-cyan);
+            padding-left: 25px;
+        }
+        
+        .dropdown-item-custom i {
+            font-size: 1.1rem;
+            width: 20px;
+            text-align: center;
+        }
+        
+        .dropdown-divider-custom {
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--neon-cyan), transparent);
+            margin: 5px 0;
+        }
+        
+        .dropdown-header-custom {
+            padding: 15px 20px 10px;
+            color: var(--neon-cyan);
+            font-weight: 700;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            border-bottom: 1px solid rgba(0, 240, 255, 0.2);
+        }
+        
+        .history-section {
+            display: none;
+            animation: fadeInDown 0.5s ease;
+        }
+        
+        .history-section.show {
+            display: block;
+        }
+        
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        @media (max-width: 768px) {
+            body {
+                padding-top: 70px;
+            }
+            
+            .navbar-brand {
+                font-size: 1.2rem;
+            }
+            
+            .content-wrapper {
+                padding: 20px 0 50px;
+            }
+            
+            .welcome-section {
+                padding: 25px 20px;
+                margin-bottom: 20px;
+            }
+            
+            .welcome-title {
+                font-size: 1.8rem;
+                margin-bottom: 8px;
+            }
+            
+            .welcome-section p {
+                font-size: 0.9rem !important;
+            }
+            
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 15px;
+                margin: 20px 0;
+            }
+            
+            .stat-card {
+                padding: 18px;
+            }
+            
+            .stat-value {
+                font-size: 1.8rem;
+            }
+            
+            .stat-label {
+                font-size: 0.8rem;
+            }
+            
+            .stat-icon {
+                font-size: 1.5rem;
+            }
+            
+            .section-title {
+                font-size: 1.3rem;
+                margin: 30px 0 15px;
+            }
+            
+            .quick-actions {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 15px;
+                margin: 20px 0;
+            }
+            
+            .action-card {
+                padding: 20px 15px;
+            }
+            
+            .action-icon {
+                font-size: 2rem;
+                margin-bottom: 10px;
+            }
+            
+            .action-title {
+                font-size: 0.9rem;
+            }
+            
+            .history-card {
+                padding: 18px;
+                margin-bottom: 15px;
+            }
+            
+            .history-date {
+                font-size: 0.85rem;
+            }
+            
+            .history-status {
+                font-size: 0.75rem;
+                padding: 4px 10px;
+            }
+            
+            .history-summary {
+                font-size: 0.9rem;
+            }
+            
+            .history-stats {
+                flex-wrap: wrap;
+                gap: 15px;
+                margin-top: 10px;
+            }
+            
+            .history-stat {
+                font-size: 0.8rem;
+                flex: 1 1 40%;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .navbar-brand {
+                font-size: 1rem;
+            }
+            
+            .profile-button {
+                padding: 8px 15px;
+                gap: 6px;
+                font-size: 0.85rem;
+            }
+            
+            .profile-button i:first-child {
+                font-size: 1.1rem;
+            }
+            
+            .profile-button i:last-child {
+                font-size: 0.7rem;
+            }
+            
+            .welcome-section {
+                padding: 20px 15px;
+            }
+            
+            .welcome-title {
+                font-size: 1.5rem;
+            }
+            
+            .stats-grid {
+                grid-template-columns: 1fr;
+                gap: 12px;
+            }
+            
+            .stat-card {
+                padding: 15px;
+            }
+            
+            .section-title {
+                font-size: 1.2rem;
+            }
+            
+            .quick-actions {
+                grid-template-columns: 1fr;
+                gap: 12px;
+            }
+            
+            .history-card {
+                padding: 15px;
+            }
+            
+            .history-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
+            
+            .history-stats {
+                flex-direction: column;
+                gap: 8px;
+            }
+            
+            .history-stat {
+                flex: 1 1 100%;
+            }
+        }
     </style>
 </head>
 <body>
@@ -252,13 +548,34 @@
     <nav class="navbar navbar-glass fixed-top">
         <div class="container">
             <a class="navbar-brand" href="index.html">⚡ InsulaAI</a>
-            <div>
-                <span style="color: #aaa; margin-right: 20px;">
-                    <i class="bi bi-person-circle"></i> <span id="userName">User</span>
-                </span>
-                <a href="index.html" class="auth-btn auth-btn-secondary" onclick="logout()">
-                    <i class="bi bi-box-arrow-right"></i> Logout
-                </a>
+            <div class="profile-dropdown">
+                <div class="profile-button" id="profileButton">
+                    <i class="bi bi-person-circle"></i>
+                    <span id="userName">User</span>
+                    <i class="bi bi-chevron-down" style="font-size: 0.8rem;"></i>
+                </div>
+                <div class="dropdown-menu-custom" id="profileDropdown">
+                    <div class="dropdown-header-custom">
+                        Account
+                    </div>
+                    <a href="#" class="dropdown-item-custom" onclick="window.insulaModal.show({title: 'Profile', message: 'Profile settings coming soon!', type: 'info'}); return false;">
+                        <i class="bi bi-person-fill"></i>
+                        <span>My Profile</span>
+                    </a>
+                    <a href="#" class="dropdown-item-custom" onclick="toggleHistory(); return false;">
+                        <i class="bi bi-clock-history"></i>
+                        <span>Analysis History</span>
+                    </a>
+                    <a href="#" class="dropdown-item-custom" onclick="window.insulaModal.show({title: 'Help', message: 'Help documentation coming soon!', type: 'help'}); return false;">
+                        <i class="bi bi-question-circle-fill"></i>
+                        <span>Help & Support</span>
+                    </a>
+                    <div class="dropdown-divider-custom"></div>
+                    <a href="index.html" class="dropdown-item-custom" onclick="logout()">
+                        <i class="bi bi-box-arrow-right"></i>
+                        <span>Logout</span>
+                    </a>
+                </div>
             </div>
         </div>
     </nav>
@@ -313,9 +630,10 @@
                 </a>
             </div>
             
-            <h2 class="section-title"><i class="bi bi-clock-history"></i> Recent Analysis History</h2>
-            
-            <div class="history-card" onclick="window.location.href='result.html'">
+            <div class="history-section" id="historySection">
+                <h2 class="section-title"><i class="bi bi-clock-history"></i> Recent Analysis History</h2>
+                
+                <div class="history-card" onclick="window.location.href='result.html'">
                 <div class="history-header">
                     <div class="history-date"><i class="bi bi-calendar3"></i> November 4, 2025 - 14:23</div>
                     <div class="history-status status-alert">3 Faults Found</div>
@@ -378,6 +696,7 @@
                     <div class="history-stat"><strong>Confidence:</strong> 95.4%</div>
                 </div>
             </div>
+            </div>
         </div>
     </div>
     
@@ -400,6 +719,42 @@
         function logout() {
             logoutUser();
             window.location.href = 'index.html';
+        }
+        
+        // Profile dropdown toggle
+        const profileButton = document.getElementById('profileButton');
+        const profileDropdown = document.getElementById('profileDropdown');
+        
+        profileButton.addEventListener('click', (e) => {
+            e.stopPropagation();
+            profileDropdown.classList.toggle('show');
+        });
+        
+        // Close dropdown when clicking outside
+        document.addEventListener('click', (e) => {
+            if (!profileDropdown.contains(e.target) && !profileButton.contains(e.target)) {
+                profileDropdown.classList.remove('show');
+            }
+        });
+        
+        // Close dropdown when clicking on a menu item
+        document.querySelectorAll('.dropdown-item-custom').forEach(item => {
+            item.addEventListener('click', () => {
+                profileDropdown.classList.remove('show');
+            });
+        });
+        
+        // Toggle history section
+        function toggleHistory() {
+            const historySection = document.getElementById('historySection');
+            historySection.classList.toggle('show');
+            
+            // Scroll to history section if showing
+            if (historySection.classList.contains('show')) {
+                setTimeout(() => {
+                    historySection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }, 100);
+            }
         }
     </script>
 </body>

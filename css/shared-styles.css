@@ -122,3 +122,88 @@ body {
     opacity: 0;
     transition: all 0.5s ease;
 }
+
+/* Global Mobile Responsive Styles */
+@media (max-width: 768px) {
+    body {
+        font-size: 14px;
+    }
+    
+    h1 {
+        font-size: 1.8rem;
+    }
+    
+    h2 {
+        font-size: 1.5rem;
+    }
+    
+    h3 {
+        font-size: 1.2rem;
+    }
+    
+    h4 {
+        font-size: 1.1rem;
+    }
+    
+    h5, h6 {
+        font-size: 1rem;
+    }
+    
+    p {
+        font-size: 0.9rem;
+    }
+    
+    .container {
+        padding-left: 15px;
+        padding-right: 15px;
+    }
+    
+    .btn {
+        font-size: 0.85rem;
+        padding: 10px 20px;
+    }
+    
+    .card {
+        margin-bottom: 15px;
+    }
+    
+    .card-body {
+        padding: 15px;
+    }
+}
+
+@media (max-width: 480px) {
+    body {
+        font-size: 13px;
+    }
+    
+    h1 {
+        font-size: 1.5rem;
+    }
+    
+    h2 {
+        font-size: 1.3rem;
+    }
+    
+    h3 {
+        font-size: 1.1rem;
+    }
+    
+    h4, h5, h6 {
+        font-size: 1rem;
+    }
+    
+    p {
+        font-size: 0.85rem;
+    }
+    
+    .container {
+        padding-left: 10px;
+        padding-right: 10px;
+    }
+    
+    .btn {
+        font-size: 0.8rem;
+        padding: 8px 16px;
+    }
+}

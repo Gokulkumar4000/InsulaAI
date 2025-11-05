@@ -243,13 +243,84 @@
             .auth-container {
                 flex-direction: column;
             }
+            
+            .auth-left, .auth-right {
+                padding: 25px 20px;
+            }
+            
             .auth-right {
                 border-left: none;
                 border-top: 2px solid rgba(0, 240, 255, 0.3);
-                padding: 30px;
+                min-height: auto;
             }
+            
+            .auth-card {
+                padding: 30px 25px;
+                max-width: 100%;
+            }
+            
+            .auth-title {
+                font-size: 1.8rem;
+            }
+            
+            .auth-subtitle {
+                font-size: 0.9rem;
+                margin-bottom: 25px;
+            }
+            
+            .form-control {
+                padding: 12px;
+                font-size: 0.9rem;
+                margin-bottom: 15px;
+            }
+            
+            .form-label {
+                font-size: 0.85rem;
+            }
+            
+            .btn-submit {
+                padding: 12px;
+                font-size: 0.95rem;
+                letter-spacing: 1px;
+            }
+            
             .visual-icon {
                 font-size: 80px;
+                margin-bottom: 20px;
+            }
+            
+            .visual-title {
+                font-size: 1.5rem;
+            }
+            
+            .visual-text {
+                font-size: 0.9rem;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .auth-left, .auth-right {
+                padding: 20px 15px;
+            }
+            
+            .auth-card {
+                padding: 25px 20px;
+            }
+            
+            .auth-title {
+                font-size: 1.5rem;
+            }
+            
+            .auth-subtitle {
+                font-size: 0.85rem;
+            }
+            
+            .visual-icon {
+                font-size: 60px;
+            }
+            
+            .visual-title {
+                font-size: 1.3rem;
             }
         }
     </style>

@@ -171,7 +171,7 @@ class InsulaModal {
             let iconColor = step.iconColor || 'var(--neon-cyan)';
 
             bodyEl.innerHTML = `
-                <div class="step-tutorial-content">
+                <div class="step-tutorial-content" style="opacity: 0; transform: translateX(50px); transition: all 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);">
                     <div class="modal-icon" style="color: ${iconColor}; font-size: 3rem; margin-bottom: 20px; animation: pulse 2s infinite;">
                         ${icon}
                     </div>
@@ -182,23 +182,50 @@ class InsulaModal {
                         ${step.message}
                     </div>
                     <div class="step-progress" style="margin-top: 25px;">
-                        <div class="progress-dots" style="display: flex; gap: 8px; justify-content: center; margin-bottom: 15px;">
-                            ${steps.map((_, idx) => `
-                                <div class="progress-dot ${idx === currentStep ? 'active' : ''} ${idx < currentStep ? 'completed' : ''}" 
-                                     style="width: 10px; height: 10px; border-radius: 50%; 
-                                            background: ${idx === currentStep ? 'var(--neon-cyan)' : idx < currentStep ? 'var(--neon-violet)' : 'rgba(255,255,255,0.2)'};
-                                            transition: all 0.3s ease;
-                                            box-shadow: ${idx === currentStep ? '0 0 15px var(--neon-cyan)' : 'none'};"></div>
-                            `).join('')}
+                        <div class="progress-dots" style="display: flex; gap: 8px; justify-content: center; margin-bottom: 15px; position: relative;">
+                            ${steps.map((_, idx) => {
+                                const dotPosition = (100 / (steps.length - 1)) * idx;
+                                return `
+                                    <div class="progress-dot ${idx === currentStep ? 'active' : ''} ${idx < currentStep ? 'completed' : ''}" 
+                                         style="width: 12px; height: 12px; border-radius: 50%; 
+                                                background: ${idx === currentStep ? 'var(--neon-cyan)' : idx < currentStep ? 'var(--neon-violet)' : 'rgba(255,255,255,0.2)'};
+                                                transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+                                                box-shadow: ${idx === currentStep ? '0 0 15px var(--neon-cyan)' : 'none'};
+                                                position: relative;
+                                                z-index: 2;">
+                                    </div>
+                                `;
+                            }).join('')}
+                            <svg style="position: absolute; top: 50%; left: 0; width: 100%; height: 2px; transform: translateY(-50%); z-index: 1;" preserveAspectRatio="none">
+                                <line x1="0%" y1="1" x2="100%" y2="1" stroke="rgba(255,255,255,0.1)" stroke-width="2"/>
+                                <line class="progress-line" x1="0%" y1="1" x2="${(currentStep / (steps.length - 1)) * 100}%" y2="1" 
+                                      stroke="url(#lineGradient)" stroke-width="2" 
+                                      style="transition: all 0.6s cubic-bezier(0.34, 1.56, 0.64, 1); filter: drop-shadow(0 0 4px var(--neon-cyan));"/>
+                                <defs>
+                                    <linearGradient id="lineGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                                        <stop offset="0%" style="stop-color:var(--neon-cyan);stop-opacity:1" />
+                                        <stop offset="100%" style="stop-color:var(--neon-violet);stop-opacity:1" />
+                                    </linearGradient>
+                                </defs>
+                            </svg>
                         </div>
-                        <div class="progress-bar-container" style="width: 100%; height: 4px; background: rgba(255,255,255,0.1); border-radius: 2px; overflow: hidden;">
+                        <div class="progress-bar-container" style="width: 100%; height: 4px; background: rgba(255,255,255,0.1); border-radius: 2px; overflow: hidden; margin-top: 15px;">
                             <div class="progress-bar-fill" style="height: 100%; background: linear-gradient(90deg, var(--neon-cyan), var(--neon-violet)); 
-                                 width: ${((currentStep + 1) / steps.length) * 100}%; transition: width 0.5s ease;
+                                 width: ${((currentStep + 1) / steps.length) * 100}%; transition: width 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
                                  box-shadow: 0 0 10px var(--neon-cyan);"></div>
                         </div>
                     </div>
                 </div>
             `;
+
+            // Trigger slide-in animation
+            setTimeout(() => {
+                const content = bodyEl.querySelector('.step-tutorial-content');
+                if (content) {
+                    content.style.opacity = '1';
+                    content.style.transform = 'translateX(0)';
+                }
+            }, 50);
 
             footerEl.innerHTML = `
                 <div style="display: flex; gap: 10px; width: 100%; justify-content: space-between; align-items: center;">

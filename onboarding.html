@@ -31,6 +31,7 @@
             background: linear-gradient(135deg, #0a0a0f 0%, #1a0a2e 30%, #0f0a1a 60%, #0a0a0f 100%);
             background-size: 400% 400%;
             animation: gradientShift 20s ease infinite;
+            pointer-events: none;
         }
         
         @keyframes gradientShift {
@@ -50,6 +51,7 @@
                 linear-gradient(90deg, var(--neon-cyan) 1px, transparent 1px);
             background-size: 60px 60px;
             animation: gridMove 30s linear infinite;
+            pointer-events: none;
         }
         
         @keyframes gridMove {
@@ -89,6 +91,8 @@
             width: 100%;
             max-width: 550px;
             box-shadow: 0 0 50px rgba(0, 240, 255, 0.2);
+            position: relative;
+            z-index: 5;
         }
         
         .onboard-title {
@@ -269,6 +273,7 @@
             cursor: pointer;
             text-transform: uppercase;
             letter-spacing: 1.5px;
+            z-index: 10;
         }
         
         .btn-prev {
